@@ -1,0 +1,40 @@
+{
+  "sap.card": {
+    "type": "Object",
+    "header": {
+      "title": "No Retries",
+      "subTitle": "No triggers yet",
+      "icon": {
+        "src": "sap-icon://restart"
+      }
+    },
+    "actions": [
+      {
+        "type": "Navigation",
+        "url": ""
+      }
+    ],
+    "content": {
+      "data": {
+        "request": {
+          "url": "/odata/v4/catalog/CatalogService.countErrors()",
+          "parameters": {},
+          "headers": {},
+          "withCredentials": true
+        },
+        "path": "/value/3"
+      },
+      "groups": [
+        {
+          "title": "Action Required",
+          "items": [
+            {
+              "label": "No reprocess yet",
+              "value": "{Value}"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

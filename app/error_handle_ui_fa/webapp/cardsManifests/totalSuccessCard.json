@@ -1,0 +1,41 @@
+{
+  "sap.card": {
+    "type": "Object",
+    "header": {
+      "title": "Success",
+      "subTitle": "Retry success",
+      "icon": {
+        "src": "sap-icon://sys-enter-2"
+      }
+    },
+	"actions": [
+				{
+					"type": "Navigation",
+					"url": ""
+				}
+            ],
+    "content": {
+      "data": {
+    "request": {
+      "url": "/odata/v4/catalog/CatalogService.countErrors()",            
+      "parameters": {
+       
+      },
+      "headers": {
+        
+      },
+      "withCredentials": true                     
+    },
+    "path": "/value/1"                                 
+  },
+      "groups": [
+        {
+          "title": "Retry Success Count",
+          "items": [
+            {"label": "All successfully retied messages", "value": "{Value}"}
+          ]
+        }
+      ]
+    }
+  }
+}

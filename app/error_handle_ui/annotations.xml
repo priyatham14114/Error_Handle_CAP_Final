@@ -1,0 +1,11 @@
+<Annotations Target="com.app.errorhandleui.ErrorLogSet">
+    <Annotation Term="UI.LineItem">
+        <Collection>
+            <Record Type="UI.DataFieldForAction">
+                <PropertyValue Property="Action" String="CustomEditAction"/>
+                <PropertyValue Property="Label" String="Edit"/>
+                <PropertyValue Property="Inline" Bool="false"/>
+            </Record>
+        </Collection>
+    </Annotation>
+</Annotations>

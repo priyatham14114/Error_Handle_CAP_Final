@@ -1,0 +1,150 @@
+### Get error data
+GET http://localhost:4004/odata/v4/catalog/ErrorLogSet HTTP/1.1
+
+### Get prperty data
+GET http://localhost:4004/odata/v4/catalog/ErrorLogSet('a9c365a9-d73c-4927-944d-e16e43b488c0')?$select=Source_payload HTTP/1.1
+
+# media
+# ######
+# POST http://localhost:4004/odata/v4/catalog/ErrorLogSet HTTP/1.1
+# Content-Type: multipart/form-data
+
+
+### Upload
+PUT http://localhost:4004/odata/v4/catalog/ErrorFilesSet('6553ca12-ab8b-4a4c-92b0-0f69db0829b4')/ErrorPayloadFile/$value
+Content-Type: text/csv
+PayloadFileName: samplexml.csv
+MIMEType:text/csv
+
+ < ./files/samplexml.csv
+#  < ./files/samplexml.xml
+# < ./files/test_sample.pdf
+### Upload
+PUT http://localhost:4004/odata/v4/catalog/ErrorFilesSet('6553ca12-ab8b-4a4c-92b0-0f69db0829b4')/ErrorDetailsFile/$value
+Content-Type: text/csv
+PayloadFileName: samplexml.csv
+MIMEType:text/csv
+
+ < ./files/samplexml.csv
+
+
+#  < ./files/samplexml.xml
+# < ./files/test_sample.pdf
+
+#####
+GET http://localhost:4004/odata/v4/catalog/ErrorFilesSet('c1c34182-cea1-49e1-8e71-1480cac145fc')/ErrorPayloadFile/$value
+
+
+######
+POST http://localhost:4004/odata/v4/catalog/ErrorFilesSet HTTP/1.1
+Content-Type: application/json
+
+{
+  "PayloadFileName": "sample.csv",
+  "MIMEType": "application/csv",
+  "ErrorDescription": "Failed to process Purchase Order due to invalid partner data",
+  "ShortErrorDescription": "Partner ID not found in master data",
+  "ProcessDirectName": "INT_Outbound",
+  "Error_Code": "400",
+  "NumberOfRetriggersofFile": 2,
+  "Status": "FAILED",
+  "CorrelationID": "b3f6c1e0-9d5a-4f25-97d7-6e7c7d5ef6a2",
+  "Receiver_System": "BlueYonder",
+  "iFlow_name": "INT_Outbound"
+}
+
+
+# {
+#   "FileName": "document.pdf", 
+#   "MIMEType": "application/pdf",  
+#   "Error_message": "TEST error",
+#   "Error_Code": "404",
+#   "Receiver_System":"HighRadius"
+
+# }
+
+
+
+
+
+
+
+
+####
+
+# {
+#   "FileName": "hello.txt",
+#   "Content": "SGVsbG8gZnJvbSBDaGF0R1BUIQo=",
+#   "MIMEType": "text/plain"
+# }
+
+
+
+#####
+GET http://localhost:4004/odata/v4/catalog/ErrorLogSet('97f4954d-9620-4e52-8b1d-1861305cd243') HTTP/1.1
+
+####
+POST http://localhost:4004/odata/v4/catalog/ErrorLogSet HTTP/1.1
+Content-Type: application/json
+
+{
+  "Source_payload": {
+  "PurchaseOrder": "0061234567",
+  "CreatedByUser": "unknown12",
+  "PurchaseOrderDate": "2025-09-20",
+  "companyCode": "1000",
+  "PurchasingOrganization": "US01",
+  "PurchasingGroup": "PG01",
+  "MaterialType": "ROH",
+  "MaterialGroup": "MG100",
+  "Plant": "PL01",
+  "StorageLocation": "SL01"
+},
+  "Error_Code": "500",
+  "Error_Msg": "com.sap.xi.mapping.camel.XiMappingException: Cannot produce target element /PurchaseOrderData/Material. Queue has not enough values in context. Target xsd requires a value for this element, but target field mapping does not produce one. Probably the xml-instance is not valid to the source xsd, or the target field mapping does not fulfill the requirement of the target xsd.",
+  "Msg_ID": "AGi5aM2u_ZquCnkpe1LjDlrjDmdQ",
+  "CorrelationID": "AGi5aM1i0Dq5f507ANZnNEpQXmuC",
+  "iFlow_name": "Test",
+  "Receiver_System":"Blueyonder"
+}
+
+# XML TEST
+####
+POST http://localhost:4004/odata/v4/catalog/ErrorLogSet HTTP/1.1
+Content-Type: application/json
+
+{
+  "Source_payload": "<PurchaseOrderData>
+  <PurchaseOrder>PO125367890</PurchaseOrder><CreatedByUser>TEST_TODAY</CreatedByUser><PurchaseOrderDate>2025-09-01</PurchaseOrderDate><companyCode>1000</companyCode><PurchasingOrganization>US01</PurchasingOrganization><PurchasingGroup>PG01</PurchasingGroup><MaterialType>ROH</MaterialType><Material>MAT001</Material><MaterialGroup>MG100</MaterialGroup><Plant>PL01</Plant><StorageLocation>SL01</StorageLocation></PurchaseOrderData>",
+  "Error_Code": "500",
+  "Error_Msg": "com.sap.xi.mapping.camel.XiMappingException: Cannot produce target element /PurchaseOrderData/Material. Queue has not enough values in context. Target xsd requires a value for this element, but target field mapping does not produce one. Probably the xml-instance is not valid to the source xsd, or the target field mapping does not fulfill the requirement of the target xsd.",
+  "Msg_ID": "AGi5aM2u_ZquCnkpe1LjDlrjDmdQ",
+  "CorrelationID": "AGi5aM1i0Dq5f507ANZnNEpQXmuC",
+  "iFlow_name": "Test",
+  "Receiver_System":"Blueyonder"
+}
+
+####
+PUT http://localhost:4004/odata/v4/catalog/ErrorLogSet('da2c43de-a2e3-4db6-9645-83d313120fd4') HTTP/1.1
+Content-Type: application/json
+
+{
+  "Source_payload": {
+    "PurchaseOrder": "PO125367890",
+    "CreatedByUser": "TEST_TODAY",
+    "PurchaseOrderDate": "2025-09-01",
+    "companyCode": "1000",
+    "PurchasingOrganization": "US01",
+    "PurchasingGroup": "PG01",
+    "MaterialType": "ROH",
+    "Material": "MAT001",
+    "MaterialGroup": "MG100",
+    "Plant": "PL01",
+    "StorageLocation": "SL01"
+  },
+  "Error_Code": "400",
+  "Error_Msg": "com.sap.xi.mapping.camel.XiMappingException: Cannot produce target element /PurchaseOrderData/Material. Queue has not enough values in context. Target xsd requires a value for this element, but target field mapping does not produce one. Probably the xml-instance is not valid to the source xsd, or the target field mapping does not fulfill the requirement of the target xsd.",
+  "Msg_ID": "AGi5aM2u_ZquCnkpe1LjDlrjDmdQ",
+  "CorrelationID": "AGi5aM1i0Dq5f507ANZnNEpQXmuC",
+  "iFlow_name": "IF_3PL_To_HANA"
+}

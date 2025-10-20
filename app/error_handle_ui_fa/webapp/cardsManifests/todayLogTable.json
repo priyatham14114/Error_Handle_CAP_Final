@@ -1,0 +1,41 @@
+{
+  "sap.app": {
+    "id": "tableCard"
+  },
+  "sap.card": {
+    "type": "Table",
+    "header": {
+      "title": "Recent Error records (Developing....)"
+    },
+    "content": {
+      "data": {
+        "json": [
+          {"Name": "Record1", "Date": "2025-09-30", "Status": "Open"},
+          {"Name": "Record2", "Date": "2025-09-30", "Status": "Open"},
+          {"Name": "Record3", "Date": "2025-09-30", "Status": "Open"},
+          {"Name": "Record4", "Date": "2025-09-30", "Status": "Open"},
+          {"Name": "Record5", "Date": "2025-09-30", "Status": "Open"},
+          {"Name": "Record6", "Date": "2025-09-30", "Status": "Closed"},
+          {"Name": "Record7", "Date": "2025-09-30", "Status": "Closed"},
+          {"Name": "Record8", "Date": "2025-09-30", "Status": "Closed"},
+          {"Name": "Record8", "Date": "2025-09-30", "Status": "Closed"},
+          {"Name": "Record8", "Date": "2025-09-30", "Status": "Closed"},
+          {"Name": "Record8", "Date": "2025-09-30", "Status": "Closed"},
+          {"Name": "Record8", "Date": "2025-09-30", "Status": "Closed"},
+          {"Name": "Record8", "Date": "2025-09-30", "Status": "Closed"},
+          {"Name": "Record8", "Date": "2025-09-30", "Status": "Closed"}
+        ]
+      },
+      "row": {
+        "columns": [
+          {"title": "IFlow Name", "value": "{Name}"},
+          {"title": "Date", "value": "{Date}"},
+          {"title": "Status", "value": "{Status}"}
+        ]
+      },
+      "maxItems": 8,
+      "showNoData": true,
+      "scrollable":true
+    }
+  }
+}

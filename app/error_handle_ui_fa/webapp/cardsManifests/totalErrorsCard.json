@@ -1,0 +1,44 @@
+{
+  "sap.card": {
+    "type": "Object",
+    "header": {
+      "title": "Total Errors",
+      "subTitle": "Recorded error count",
+      "icon": {
+        "src": "sap-icon://sum"
+      }
+    },
+    "actions": [
+				{
+					"type": "Navigation",
+					"url": ""
+				}
+            ],
+    "content": {
+      "data": {
+    "request": {
+      "url": "/odata/v4/catalog/CatalogService.countErrors()",            
+      "parameters": {
+       
+      },
+      "headers": {
+        
+      },
+      "withCredentials": true                     
+    },
+    "path": "/value/0"                                   
+  },
+      "groups": [
+        {
+          "title": "Error Count",
+          "items": [
+            {
+              "label": "Total Errors",
+              "value": "{Value}"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

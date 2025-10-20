@@ -1,0 +1,52 @@
+{
+    "sap.app": {
+        "id": "sample.CardsLayout.model.donut",
+        "type": "card"
+    },
+    "sap.card": {
+        "type": "Analytical",
+        "header": {
+            "title": "All"
+        },
+        "content": {
+            "chartType": "Donut",
+            "legend": {
+                "visible": true,
+                "position": "Bottom",
+                "alignment": "Left"
+            },
+            "plotArea": {
+                "dataLabel": {
+                    "visible": true,
+                    "showTotal": true
+                }
+            },
+            "title": {
+                "visible": false
+            },
+            "measureAxis": "size",
+            "dimensionAxis": "color",
+            "data": {
+                "request": {
+                    "url": "/odata/v4/catalog/CatalogService.countErrors()",
+                    "parameters": {},
+                    "headers": {},
+                    "withCredentials": true
+                },
+                "path": "/value"
+            },
+            "dimensions": [
+                {
+                    "label": "Identifier",
+                    "value": "{Identifier}"
+                }
+            ],
+            "measures": [
+                {
+                    "label": "Value",
+                    "value": "{Value}"
+                }
+            ]
+        }
+    }
+}

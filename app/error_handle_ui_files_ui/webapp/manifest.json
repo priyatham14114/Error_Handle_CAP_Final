@@ -1,0 +1,226 @@
+{
+  "_version": "1.76.0",
+  "sap.app": {
+    "id": "com.app.errorhandleuifilesui",
+    "type": "application",
+    "i18n": "i18n/i18n.properties",
+    "applicationVersion": {
+      "version": "0.0.1"
+    },
+    "title": "{{appTitle}}",
+    "description": "{{appDescription}}",
+    "resources": "resources.json",
+    "sourceTemplate": {
+      "id": "@sap/generator-fiori:lrop",
+      "version": "1.18.7",
+      "toolsId": "11b00b8c-aff0-4042-9840-2e8e3afbbcfe"
+    },
+    "dataSources": {
+      "mainService": {
+        "uri": "/odata/v4/catalog/",
+        "type": "OData",
+        "settings": {
+          "annotations": [],
+          "odataVersion": "4.0"
+        }
+      }
+    },
+    "crossNavigation": {
+      "inbounds": {
+        "ErrorFilesSet-manage": {
+          "semanticObject": "ErrorFilesSet",
+          "action": "manage",
+          "title": "{{ErrorFilesSet-manage.flpTitle}}",
+          "subTitle": "{{ErrorFilesSet-manage.flpSubtitle}}",
+          "signature": {
+            "parameters": {},
+            "additionalParameters": "allowed"
+          }
+        }
+      }
+    }
+  },
+  "sap.ui": {
+    "technology": "UI5",
+    "icons": {
+      "icon": "",
+      "favIcon": "",
+      "phone": "",
+      "phone@2": "",
+      "tablet": "",
+      "tablet@2": ""
+    },
+    "deviceTypes": {
+      "desktop": true,
+      "tablet": true,
+      "phone": true
+    }
+  },
+  "sap.ui5": {
+    "flexEnabled": true,
+    "dependencies": {
+      "minUI5Version": "1.140.0",
+      "libs": {
+        "sap.m": {},
+        "sap.ui.core": {},
+        "sap.fe.templates": {},
+        "sap.f": {}
+      }
+    },
+    "contentDensities": {
+      "compact": true,
+      "cozy": true
+    },
+    "models": {
+      "i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "settings": {
+          "bundleName": "com.app.errorhandleuifilesui.i18n.i18n"
+        }
+      },
+      "": {
+        "dataSource": "mainService",
+        "preload": true,
+        "settings": {
+          "operationMode": "Server",
+          "autoExpandSelect": true,
+          "earlyRequests": true
+        }
+      },
+      "@i18n": {
+        "type": "sap.ui.model.resource.ResourceModel",
+        "uri": "i18n/i18n.properties"
+      }
+    },
+    "resources": {
+      "css": []
+    },
+    "routing": {
+      "config": {
+        "flexibleColumnLayout": {
+          "defaultTwoColumnLayoutType": "TwoColumnsMidExpanded",
+          "defaultThreeColumnLayoutType": "ThreeColumnsMidExpanded"
+        },
+        "routerClass": "sap.f.routing.Router"
+      },
+      "routes": [
+        {
+          "pattern": ":?query:",
+          "name": "ErrorFilesSetList",
+          "target": [
+            "ErrorFilesSetList"
+          ]
+        },
+        {
+          "pattern": "ErrorFilesSet({key}):?query:",
+          "name": "ErrorFilesSetObjectPage",
+          "target": [
+            "ErrorFilesSetList",
+            "ErrorFilesSetObjectPage"
+          ]
+        }
+      ],
+      "targets": {
+        "ErrorFilesSetList": {
+          "type": "Component",
+          "id": "ErrorFilesSetList",
+          "name": "sap.fe.templates.ListReport",
+          "options": {
+            "settings": {
+              "contextPath": "/ErrorFilesSet",
+              "variantManagement": "Page",
+              "navigation": {
+                "ErrorFilesSet": {
+                  "detail": {
+                    "route": "ErrorFilesSetObjectPage"
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "type": "GridTable",
+                    "disableCopyToClipboard": true,
+                    "growingScrollToLoad": false,
+                    "growing": true,
+                    "growingThreshold": 20,
+                    "quickVariantSelection": {
+                      "showCounts": true
+                    }
+                  },
+                  "actions": {
+                    "DataFieldForAction::CatalogService.reTriggerFile": {
+                      "enableOnSelect": "single",
+                      "afterExecution": {
+                        "enableAutoScroll": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "controlAggregation": "beginColumnPages",
+          "contextPattern": ""
+        },
+        "ErrorFilesSetObjectPage": {
+          "type": "Component",
+          "id": "ErrorFilesSetObjectPage",
+          "name": "sap.fe.templates.ObjectPage",
+          "options": {
+            "settings": {
+              "editableHeaderContent": false,
+              "contextPath": "/ErrorFilesSet",
+              "content": {
+                "header": {
+                  "actions": {
+                    "Id_upload_modified_file": {
+                      "press": "com.app.errorhandleuifilesui.ext.controller.FileUploader.onUploadfile",
+                      "visible": true,
+                      "enabled": true,
+                      "text": "Upload new file",
+                      "icon": "sap-icon://upload-to-cloud",
+                      "position": {
+                        "placement": "Before",
+                        "anchor": "DeleteAction"
+                      }
+                    }
+                  }
+                }
+              },
+              "controlConfiguration": {
+                "@com.sap.vocabularies.UI.v1.FieldGroup#GeneratedGroup": {
+                  "actions": {
+                    "Id_download_file_btn": {
+                      "press": "com.app.errorhandleuifilesui.ext.controller.FileDownloader.onFileDownload",
+                      "visible": true,
+                      "enabled": true,
+                      "icon": "sap-icon://download-from-cloud",
+                      "text": "Click here to download"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "controlAggregation": "midColumnPages",
+          "contextPattern": "/ErrorFilesSet({key})"
+        }
+      }
+    },
+    "rootView": {
+      "viewName": "sap.fe.templates.RootContainer.view.Fcl",
+      "type": "XML",
+      "async": true,
+      "id": "appRootView"
+    }
+  },
+  "sap.fiori": {
+    "registrationIds": [],
+    "archeType": "transactional"
+  },
+  "sap.cloud": {
+    "public": true,
+    "service": "POC_EH_managed"
+  }
+}

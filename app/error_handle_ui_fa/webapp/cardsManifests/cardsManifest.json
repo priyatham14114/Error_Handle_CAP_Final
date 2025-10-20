@@ -1,0 +1,341 @@
+{
+    "TotalErrors": {
+        "sap.app": {
+            "id": "Id_Total_Errors",
+            "type": "card"
+        },
+        "sap.card": {
+            "type": "Object",
+            "header": {
+                "title": "Total Errors",
+                "subTitle": "Recorded error count",
+                "icon": {
+                    "src": "sap-icon://sum"
+                }
+            },
+            "configuration": {
+                "parameters": {
+                    "UIBasePath": "{config>/UIBasePath}"
+                },
+                "destinations": {
+                    "srv": {
+                        "name": "srv-api",
+                        "defaultUrl": "{{parameters.UIBasePath}}/odata/v4/catalog/"
+                    }
+                }
+            },
+            "actions": [
+                {
+                    "type": "Navigation",
+                    "url": ""
+                }
+            ],
+            "content": {
+                "data": {
+                    "request": {
+                        "url": "{{destinations.srv}}/CatalogService.countErrors()",
+                        "method": "GET"
+                    },
+                    "path": "/value/0"
+                },
+                "groups": [
+                    {
+                        "title": "Error Count",
+                        "items": [
+                            {
+                                "label": "Total Errors",
+                                "value": "{Value}"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "TotalSuccess": {
+        "sap.app": {
+            "id": "Id_Success",
+            "type": "card"
+        },
+        "sap.card": {
+            "type": "Object",
+            "header": {
+                "title": "Success",
+                "subTitle": "Retry success",
+                "icon": {
+                    "src": "sap-icon://sys-enter-2"
+                }
+            },
+          "configuration": {
+                "parameters": {
+                    "UIBasePath": "{config>/UIBasePath}"
+                },
+                "destinations": {
+                    "srv": {
+                        "name": "srv-api",
+                        "defaultUrl": "{{parameters.UIBasePath}}/odata/v4/catalog/"
+                    }
+                }
+            },
+            "actions": [
+                {
+                    "type": "Navigation",
+                    "url": ""
+                }
+            ],
+            "content": {
+                "data": {
+                    "request": {
+                        "url": "{{destinations.srv}}/CatalogService.countErrors()",
+                        "parameters": {},
+                        "headers": {}
+                    },
+                    "path": "/value/1"
+                },
+                "groups": [
+                    {
+                        "title": "Retry Success Count",
+                        "items": [
+                            {
+                                "label": "All successfully retied messages",
+                                "value": "{Value}"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "NoRetries": {
+        "sap.app": {
+            "id": "Id_Noretries",
+            "type": "card"
+        },
+        "sap.card": {
+            "type": "Object",
+            "header": {
+                "title": "No Retries",
+                "subTitle": "No triggers yet",
+                "icon": {
+                    "src": "sap-icon://restart"
+                }
+            },
+             "configuration": {
+                "parameters": {
+                    "UIBasePath": "{config>/UIBasePath}"
+                },
+                "destinations": {
+                    "srv": {
+                        "name": "srv-api",
+                        "defaultUrl": "{{parameters.UIBasePath}}/odata/v4/catalog/"
+                    }
+                }
+            },
+            "actions": [
+                {
+                    "type": "Navigation",
+                    "url": ""
+                }
+            ],
+            "content": {
+                "data": {
+                    "request": {
+                        "url": "{{destinations.srv}}/CatalogService.countErrors()",
+                        "parameters": {},
+                        "headers": {}
+                    },
+                    "path": "/value/3"
+                },
+                "groups": [
+                    {
+                        "title": "Action Required",
+                        "items": [
+                            {
+                                "label": "No reprocess yet",
+                                "value": "{Value}"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "TotalFailed": {
+        "sap.app": {
+            "id": "Id_Failed",
+            "type": "card"
+        },
+        "sap.card": {
+            "type": "Object",
+            "header": {
+                "title": "Failed",
+                "subTitle": "Retry failed",
+                "icon": {
+                    "src": "sap-icon://error"
+                }
+            },
+          "configuration": {
+                "parameters": {
+                    "UIBasePath": "{config>/UIBasePath}"
+                },
+                "destinations": {
+                    "srv": {
+                        "name": "srv-api",
+                        "defaultUrl": "{{parameters.UIBasePath}}/odata/v4/catalog/"
+                    }
+                }
+            },
+            "actions": [
+                {
+                    "type": "Navigation",
+                    "url": ""
+                }
+            ],
+            "content": {
+                "chartType": "Numeric",
+                "data": {
+                    "request": {
+                        "url": "{{destinations.srv}}/CatalogService.countErrors()",
+                        "parameters": {},
+                        "headers": {}
+                    },
+                    "path": "/value/2"
+                },
+                "groups": [
+                    {
+                        "title": "Retry Failed Errors",
+                        "items": [
+                            {
+                                "label": "Retried but failed",
+                                "value": "{Value}",
+                                "valueColor": "Error"
+                            }
+                        ]
+                    }
+                ]
+            }
+        }
+    },
+    "Donut": {
+        "sap.app": {
+            "id": "sample.CardsLayout.model.donut",
+            "type": "card"
+        },
+        "sap.card": {
+            "type": "Analytical",
+            "header": {
+                "title": "All"
+            },
+            "configuration": {
+                "parameters": {
+                    "UIBasePath": "{config>/UIBasePath}"
+                },
+                "destinations": {
+                    "srv": {
+                        "name": "srv-api",
+                        "defaultUrl": "{{parameters.UIBasePath}}/odata/v4/catalog/"
+                    }
+                }
+            },
+            "content": {
+                "chartType": "Donut",
+                "legend": {
+                    "visible": true,
+                    "position": "Bottom",
+                    "alignment": "Left"
+                },
+                "plotArea": {
+                    "dataLabel": {
+                        "visible": true,
+                        "showTotal": true
+                    }
+                },
+                "title": {
+                    "visible": false
+                },
+                "measureAxis": "size",
+                "dimensionAxis": "color",
+                "data": {
+                    "request": {
+                        "url": "{{destinations.srv}}/CatalogService.countErrors()",
+                        "parameters": {},
+                        "headers": {}
+                    },
+                    "path": "/value"
+                },
+                "dimensions": [
+                    {
+                        "label": "Identifier",
+                        "value": "{Identifier}"
+                    }
+                ],
+                "measures": [
+                    {
+                        "label": "Value",
+                        "value": "{Value}"
+                    }
+                ]
+            }
+        }
+    },
+    "RecentTable": {
+        "sap.app": {
+            "id": "Id_Recent_Table",
+            "type": "card"
+        },
+        "sap.card": {
+            "type": "Table",
+            "header": {
+                "title": "Recent Error records"
+            },
+            "configuration": {
+                "parameters": {
+                    "UIBasePath": "{config>/UIBasePath}"
+                },
+                "destinations": {
+                    "srv": {
+                        "name": "srv-api",
+                        "defaultUrl": "{{parameters.UIBasePath}}/odata/v4/catalog/"
+                    }
+                }
+            },
+            "content": {
+                "data": {
+                    "request": {
+                        "url": "{{destinations.srv}}/ErrorLogSet?$top=10&$orderby=createdAt desc"
+                    },
+                    "path": "/value"
+                },
+                "row": {
+                    "columns": [
+                        {
+                            "title": "IFlow Name",
+                            "value": "{iFlow_name}"
+                        },
+                        {
+                            "title": "Date",
+                            "value": "{createdAt}"
+                        },
+                        {
+                            "title": "Status",
+                            "value": "{Status}"
+                        },
+                        {
+                            "title": "Receiver System",
+                            "value": "{Receiver_System}"
+                        }
+                    ],
+                    "actions": [
+                        {
+                            "type": "Navigation",
+                            "url": "#ErrorLogSet-manage?filter=ID eq {ID}"
+                        }
+                    ]
+                },
+                "maxItems": 9,
+                "showNoData": true,
+                "scrollable": true
+            }
+        }
+    }
+}

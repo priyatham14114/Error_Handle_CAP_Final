@@ -1,0 +1,44 @@
+{
+  "sap.card": {
+    "type": "Object",
+    "header": {
+      "title": "Failed",
+      "subTitle": "Retry failed",
+      "icon": {
+        "src": "sap-icon://error"
+      }
+      
+    },
+    "actions": [
+      {
+        "type": "Navigation",
+        "url": ""
+      }
+    ],
+    "content": {
+      "chartType": "Numeric",
+      "data": {
+        "request": {
+      "url": "/odata/v4/catalog/CatalogService.countErrors()",            
+
+          "parameters": {},
+          "headers": {},
+          "withCredentials": true
+        },
+        "path": "/value/2"
+      },
+      "groups": [
+        {
+          "title": "Retry Failed Errors",
+          "items": [
+            {
+              "label": "Retried but failed",
+              "value": "{Value}",
+              "valueColor": "Error"
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

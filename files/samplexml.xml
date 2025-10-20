@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Order>
+    <OrderID>12345</OrderID>
+    <OrderDate>2025-09-23</OrderDate>
+    <Customer>
+        <CustomerID>CUST1001</CustomerID>
+        <Name>Jane Doe</Name>
+        <Email>jane.doe@example.com</Email>
+    </Customer>
+    <Items>
+        <Item>
+            <ProductID>PROD001</ProductID>
+            <ProductName>Wireless Mouse</ProductName>
+            <Quantity>2</Quantity>
+            <Price>25.99</Price>
+        </Item>
+        <Item>
+            <ProductID>PROD002</ProductID>
+            <ProductName>Keyboard</ProductName>
+            <Quantity>1</Quantity>
+            <Price>45.00</Price>
+        </Item>
+    </Items>
+    <Shipping>
+        <Address>
+            <Street>123 Main St</Street>
+            <City>Metropolis</City>
+            <State>NY</State>
+            <ZipCode>10001</ZipCode>
+            <Country>USA</Country>
+        </Address>
+        <Method>Standard</Method>
+        <Cost>5.99</Cost>
+    </Shipping>
+    <TotalAmount>102.97</TotalAmount>
+</Order>

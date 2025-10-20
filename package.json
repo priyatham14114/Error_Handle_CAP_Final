@@ -1,0 +1,58 @@
+{
+  "name": "Error_Handle_CAP",
+  "version": "1.0.0",
+  "description": "A simple CAP project.",
+  "repository": "<Add your repository here>",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@cap-js/hana": "^2",
+    "@sap-cloud-sdk/http-client": "^4.1.1",
+    "@sap/approuter": "^20.8.2",
+    "@sap/cds": "^9",
+    "@sap/html5-repo-mock": "^2.2.1",
+    "@sap/xssec": "^4",
+    "express": "^4",
+    "fast-xml-parser": "^5.2.5",
+    "multer": "^2.0.2"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "devDependencies": {
+    "@cap-js/cds-types": "^0.13.0",
+    "@cap-js/sqlite": "^2",
+    "@sap/cds-dk": ">=8",
+    "cds-plugin-ui5": "^0.13.0",
+    "mbt": "^1.2.29",
+    "rimraf": "^5.0.5"
+  },
+  "scripts": {
+    "start": "cds-serve",
+    "watch-error_handle_ui": "cds watch --open com.app.errorhandleui/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "undeploy": "cf undeploy Error_Handle_CAP --delete-services --delete-service-keys --delete-service-brokers",
+    "build": "rimraf resources mta_archives && mbt build --mtar archive",
+    "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
+    "watch-error_handle_ui_fa": "cds watch --open com.app.errorhandleuifa/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-error_handle_ui_files_ui": "cds watch --open com.app.errorhandleuifilesui/index.html?sap-ui-xx-viewCache=false --livereload false"
+  },
+  "cds": {
+    "requires": {
+      "[production]": {
+        "auth": "xsuaa"
+      },
+      "destinations": true,
+      "connectivity": true,
+      "html5-repo": true,
+      "workzone": true
+    }
+  },
+  "workspaces": [
+    "app/*"
+  ],
+  "sapux": [
+    "app/error_handle_ui",
+    "app/error_handle_ui_fa",
+    "app/error_handle_ui_files_ui"
+  ]
+}

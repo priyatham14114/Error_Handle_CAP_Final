@@ -1,0 +1,284 @@
+<mvc:View
+    controllerName="com.app.errorhandleuifa.controller.Home"
+    xmlns="sap.m"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns:f="sap.f"
+    xmlns:card="sap.f.cards"
+    xmlns:w="sap.ui.integration.widgets"
+    xmlns:cssgrid="sap.ui.layout.cssgrid"
+    xmlns:layout="sap.ui.layout"
+    xmlns:suite="sap.suite.ui.commons"
+    xmlns:viz="sap.viz.ui5.controls"
+    xmlns:core="sap.ui.core"
+    xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+    xmlns:viz.data="sap.viz.ui5.data"
+>
+    <ScrollContainer
+        id="scrollContainer"
+        horizontal="false"
+        vertical="true"
+        width="100%"
+        height="100%"
+    >
+        <VBox
+            id="_IDGenVBox"
+            width="100%"
+        >
+            <f:ShellBar
+                id="_IDGenShellBar"
+                title="POC-EH"
+                secondTitle="Overview"
+                homeIcon="sap-icon://home"
+                class=""
+            />
+            <IconTabBar
+                id="idIconTabBar"
+                select="handleIconTabBarSelect"
+                headerBackgroundDesign="Transparent"
+                class="sapUiResponsiveContentPadding sapUiSmallMarginBegin"
+            >
+                <items>
+                    <IconTabFilter
+                        id="_IDGenIconTabFilter"
+                        text="Overview"
+                    >
+                        <Title
+                            id="_IDGenTitle1"
+                            text="All Errors"
+                            titleStyle="H2"
+                            class="sapUiSmallMarginBegin"
+                        />
+                        <f:GridContainer id="_IDGenGridContainer">
+                            <f:layout>
+                                <f:GridContainerSettings
+                                    id="_IDGenGridContainerSettings"
+                                    rowSize="5rem"
+                                    columnSize="5rem"
+                                    gap="1rem"
+                                />
+                            </f:layout>
+                            <f:layoutS>
+                                <f:GridContainerSettings
+                                    id="_IDGenGridContainerSettings1"
+                                    rowSize="5rem"
+                                    columnSize="5rem"
+                                    gap="0.5rem"
+                                />
+                            </f:layoutS>
+                            <!-- Custom Cars -->
+                            <!-- card1 -->
+                            <w:Card
+                                id="totalErrorsCard"
+                                manifest="{manifests>/TotalErrors}"
+                                height="250px"
+                                width="250px"
+                                action="onAction"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerItemLayoutData1"
+                                        minRows="4"
+                                        columns="3"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- card2 -->
+                            <w:Card
+                                id="totalReprocessSuccessCard"
+                                manifest="{manifests>/TotalSuccess}"
+                                height="250px"
+                                width="250px"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerItemLayoutData2"
+                                        minRows="4"
+                                        columns="3"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- card3 -->
+                            <w:Card
+                                id="totalReprocessFailedCard"
+                                manifest="{manifests>/TotalFailed}"
+                                height="250px"
+                                width="250px"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerItemLayoutData3"
+                                        minRows="4"
+                                        columns="3"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- card4 -->
+                            <w:Card
+                                id="totalNoRetriesYet"
+                                manifest="{manifests>/NoRetries}"
+                                height="250px"
+                                width="250px"
+                                action="onAction"
+                            />
+                        </f:GridContainer>
+                        <Title
+                            id="_IDGenTitle"
+                            text="Incidents"
+                            titleStyle="H2"
+                            class="sapUiSmallMarginBegin"
+                        />
+                        <f:GridContainer id="_IDGenGridContainer1">
+                            <f:layout>
+                                <f:GridContainerSettings
+                                    id="_IDGenGridContainerSettings2"
+                                    rowSize="5rem"
+                                    columnSize="5rem"
+                                    gap="1rem"
+                                />
+                            </f:layout>
+                            <f:layoutS>
+                                <f:GridContainerSettings
+                                    id="_IDGenGridContainerSettings3"
+                                    rowSize="5rem"
+                                    columnSize="5rem"
+                                    gap="0.5rem"
+                                />
+                            </f:layoutS>
+                            <w:Card
+                                id="IdDonutCard"
+                                manifest="{manifests>/Donut}"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerItemLayoutData5"
+                                        rows="4"
+                                        columns="4"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <w:Card
+                                id="todayRecordsCard"
+                                manifest="{manifests>/RecentTable}"
+                                width="900px"
+                                action="onAction"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerItemLayoutData"
+                                        minRows="4"
+                                        columns="3"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                        </f:GridContainer>
+                    </IconTabFilter>
+                    <!-- <IconTabFilter text="Team Distribution" />
+			<IconTabFilter text="Drone Maintenance" />
+			<IconTabFilter text="Drone Development" /> -->
+                </items>
+            </IconTabBar>
+            <!-- Bars start -->
+            <suite:ChartContainer
+                id="chartContainer123"
+                width="100%"
+            >
+                <suite:content>
+                    <suite:ChartContainerContent id="chartContainerContent333">
+                        <suite:content>
+                            <viz:VizFrame
+                                id="idBarChart"
+                                width="auto"
+                                height="600px"
+                                uiConfig="{applicationSet:'fiori'}"
+                                vizType="column"
+                                vizProperties="{
+                        plotArea: {
+                            dataLabel: {visible: true},
+                                    colorPalette: ['rgba(0, 153, 255, 1)','rgba(181, 101, 11, 1)','rgba(123, 142, 29, 1)','rgba(214, 23, 112, 1)']
+
+                        },
+                        title: {text:'Day wise errors'},
+                        valueAxis: {
+                            title: {
+                                visible: true,
+                                text: 'Count'
+                            },
+                            label: {
+                                formatString: '#,##0'
+                            },
+                            interval: {
+                                value: 5
+                            }
+                        },
+                        categoryAxis: {
+                            title: {
+                                visible: true,
+                                text: 'Date'
+                            }
+                        }
+                    }"
+                                selectData="onSelectData"
+                                renderComplete="handleRenderComplete"
+                            >
+                                <viz:dataset>
+                                    <viz.data:FlattenedDataset
+                                        id="flattenData0"
+                                        data="{oChartModel>/value}"
+                                    >
+                                        <viz.data:dimensions>
+                                            <viz.data:DimensionDefinition
+                                                id="_IDGenDimensionDefinition2"
+                                                name="Date"
+                                                value="{oChartModel>errorDate}"
+                                            />
+                                        </viz.data:dimensions>
+                                        <viz.data:measures>
+                                            <viz.data:MeasureDefinition
+                                                id="_IDGenMeasureDefinition4"
+                                                name="TotalErrors"
+                                                value="{oChartModel>errorCount}"
+                                            />
+                                            <viz.data:MeasureDefinition
+                                                id="_IDGenMeasureDefinition2"
+                                                name="Success"
+                                                value="{oChartModel>successCount}"
+                                            />
+                                            <viz.data:MeasureDefinition
+                                                id="_IDGenMeasureDefinition3"
+                                                name="Failed"
+                                                value="{oChartModel>failedCount}"
+                                            />
+                                            <viz.data:MeasureDefinition
+                                                id="_IDGenMeasureDefinitio"
+                                                name="NoRetries"
+                                                value="{oChartModel>noRetriesCount}"
+                                            />
+                                        </viz.data:measures>
+                                    </viz.data:FlattenedDataset>
+                                </viz:dataset>
+                                <viz:feeds>
+                                    <viz.feeds:FeedItem
+                                        id="_IDGenFeedItem6"
+                                        uid="valueAxis"
+                                        type="Measure"
+                                        values="TotalErrors,Success,Failed,NoRetries"
+                                    />
+                                    <viz.feeds:FeedItem
+                                        id="_IDGenFeedItem7"
+                                        uid="categoryAxis"
+                                        type="Dimension"
+                                        values="Date"
+                                    />
+                                </viz:feeds>
+                                <viz:dependents>
+                                    <viz:Popover id="idPopOver" />
+                                </viz:dependents>
+                            </viz:VizFrame>
+                        </suite:content>
+                    </suite:ChartContainerContent>
+                </suite:content>
+            </suite:ChartContainer>
+            <!-- Bars end -->
+        </VBox>
+    </ScrollContainer>
+</mvc:View>
