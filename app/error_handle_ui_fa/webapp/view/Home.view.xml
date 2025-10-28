@@ -40,19 +40,204 @@
                 <items>
                     <IconTabFilter
                         id="_IDGenIconTabFilter"
-                        text="Overview"
+                        text="Unit-1"
                     >
                         <Title
                             id="_IDGenTitle1"
                             text="All Errors"
-                            titleStyle="H2"
+                            titleStyle="H3"
+                            class="sapUiSmallMarginBegin"
+                        />
+                        <f:GridContainer id="_IDGenGridContainer2">
+                            <f:layout>
+                                <f:GridContainerSettings
+                                    id="_IDGenGridContainerSetting"
+                                    rowSize="3rem"
+                                    columnSize="5rem"
+                                    gap="1rem"
+                                />
+                            </f:layout>
+                            <f:layoutS>
+                                <f:GridContainerSettings
+                                    id="_IDGenGridContainerSettingsf2"
+                                    rowSize="5rem"
+                                    columnSize="5rem"
+                                    gap="0.5rem"
+                                />
+                            </f:layoutS>
+                            <!-- Custom Cars -->
+                            <!-- card1 -->
+                            <w:Card
+                                id="totalErrorsCardf2"
+                                manifest="{manifests>/TotalErrors}"
+                                action="onAction_TotalErrors"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerItemLayoutData1f2"
+                                        minRows="4"
+                                        columns="3"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- card2 -->
+                            <w:Card
+                                id="totalReprocessSuccessCardf2"
+                                manifest="{manifests>/TotalSuccess}"
+                                action="onAction_Success"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerItemLayoutData2f2"
+                                        minRows="4"
+                                        columns="3"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- card3 -->
+                            <w:Card
+                                id="totalReprocessFailedCardf2"
+                                manifest="{manifests>/TotalFailed}"
+                                action="onAction_FailedErrors"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerItemLayoutData3f2"
+                                        minRows="4"
+                                        columns="3"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- card4 -->
+                            <w:Card
+                                id="totalNoRetriesYetf2"
+                                manifest="{manifests>/NoRetries}"
+                                action="onAction_NoRetries"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerItemL3f2"
+                                        minRows="4"
+                                        columns="3"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- <w:Card
+                                id="LineChartCard"
+                                manifest="{manifests>/LineChart}"
+                                action="onAction"
+                                height="320px"
+                                width="300px"
+
+                            /> -->
+                        </f:GridContainer>
+                        <Title
+                            id="_IDGenTitlef2"
+                            text="Incidents"
+                            titleStyle="H3"
+                            class="sapUiSmallMarginBegin"
+                        />
+                        <f:GridContainer id="_IDGenGridContainer1f2">
+                            <f:layout>
+                                <f:GridContainerSettings
+                                    id="_IDGenGridContainerSettings2f2"
+                                    rowSize="5rem"
+                                    columnSize="5rem"
+                                    gap="1rem"
+                                />
+                            </f:layout>
+                            <f:layoutS>
+                                <f:GridContainerSettings
+                                    id="_IDGenGridContainerSettings3f2"
+                                    rowSize="5rem"
+                                    columnSize="5rem"
+                                    gap="0.5rem"
+                                />
+                            </f:layoutS>
+                            <!-- Recent Table -->
+                            <w:Card
+                                id="todayRecordsCardf2"
+                                manifest="{manifests>/RecentTable}"
+                                action="onAction"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="idGridContainerItemLayoutDataf2"
+                                        rows="5"
+                                        columns="6"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- line chart by status -->
+                            <w:Card
+                                id="LineChartCardf2"
+                                manifest="{manifests>/LineChart}"
+                                action="onAction"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="idGridContainerItemLayoutData_sf2"
+                                        rows="5"
+                                        columns="9"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- barchart by ststus -->
+                            <w:Card
+                                id="IdBarchart_Cardf2"
+                                manifest="{manifests>/ErrorStatusBar}"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerIdBarchart_Cardf2"
+                                        rows="6"
+                                        columns="15"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- dount -->
+                            <w:Card
+                                id="IdDonutCardf2"
+                                manifest="{manifests>/Donut}"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerItemLayoutData5f2"
+                                        rows="4"
+                                        columns="4"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- barchert by date -->
+
+                            <w:Card
+                                id="IdBarchart_Cardbydatef2"
+                                manifest="{manifests>/ErrorCountBarChart}"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerIdBarchart_bydateCardf2"
+                                        rows="4"
+                                        columns="11"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                        </f:GridContainer>
+                    </IconTabFilter>
+                    <IconTabFilter id="_IDGenIconTabFilter1" text="Unit-2" >
+
+                    <!-- test -->
+                    <Title
+                            id="_IDGenTitle2"
+                            text="All File Errors"
+                            titleStyle="H3"
                             class="sapUiSmallMarginBegin"
                         />
                         <f:GridContainer id="_IDGenGridContainer">
                             <f:layout>
                                 <f:GridContainerSettings
                                     id="_IDGenGridContainerSettings"
-                                    rowSize="5rem"
+                                    rowSize="3rem"
                                     columnSize="5rem"
                                     gap="1rem"
                                 />
@@ -69,10 +254,8 @@
                             <!-- card1 -->
                             <w:Card
                                 id="totalErrorsCard"
-                                manifest="{manifests>/TotalErrors}"
-                                height="250px"
-                                width="250px"
-                                action="onAction"
+                                manifest="{filemanifests>/TotalErrorFiles}"
+                                action="onAction_AllFiles"
                             >
                                 <w:layoutData>
                                     <f:GridContainerItemLayoutData
@@ -85,9 +268,8 @@
                             <!-- card2 -->
                             <w:Card
                                 id="totalReprocessSuccessCard"
-                                manifest="{manifests>/TotalSuccess}"
-                                height="250px"
-                                width="250px"
+                                manifest="{filemanifests>/TotalSuccessFiles}"
+                                action="onAction_SuccessFiles"
                             >
                                 <w:layoutData>
                                     <f:GridContainerItemLayoutData
@@ -100,9 +282,8 @@
                             <!-- card3 -->
                             <w:Card
                                 id="totalReprocessFailedCard"
-                                manifest="{manifests>/TotalFailed}"
-                                height="250px"
-                                width="250px"
+                                manifest="{filemanifests>/TotalFailedFiles}"
+                                action="onAction_FailedFiles"
                             >
                                 <w:layoutData>
                                     <f:GridContainerItemLayoutData
@@ -115,16 +296,30 @@
                             <!-- card4 -->
                             <w:Card
                                 id="totalNoRetriesYet"
-                                manifest="{manifests>/NoRetries}"
-                                height="250px"
-                                width="250px"
+                                manifest="{filemanifests>/NoRetriesFiles}"
+                                action="onAction_NoTriesFiles"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerItemL3"
+                                        minRows="4"
+                                        columns="3"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- <w:Card
+                                id="LineChartCard"
+                                manifest="{manifests>/LineChart}"
                                 action="onAction"
-                            />
+                                height="320px"
+                                width="300px"
+
+                            /> -->
                         </f:GridContainer>
                         <Title
                             id="_IDGenTitle"
                             text="Incidents"
-                            titleStyle="H2"
+                            titleStyle="H3"
                             class="sapUiSmallMarginBegin"
                         />
                         <f:GridContainer id="_IDGenGridContainer1">
@@ -144,9 +339,51 @@
                                     gap="0.5rem"
                                 />
                             </f:layoutS>
+                            <!-- Recent Table -->
+                            <w:Card
+                                id="todayRecordsCard"
+                                manifest="{filemanifests>/RecentTableFiles}"
+                                action="onAction"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="idGridContainerItemLayoutData"
+                                        rows="5"
+                                        columns="6"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- line chart by status -->
+                            <w:Card
+                                id="LineChartCard"
+                                manifest="{filemanifests>/LineChartFiles}"
+                                action="onAction"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="idGridContainerItemLayoutData_s"
+                                        rows="5"
+                                        columns="9"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- barchart by ststus -->
+                            <w:Card
+                                id="IdBarchart_Card"
+                                manifest="{filemanifests>/ErrorStatusBarFiles}"
+                            >
+                                <w:layoutData>
+                                    <f:GridContainerItemLayoutData
+                                        id="_IDGenGridContainerIdBarchart_Card"
+                                        rows="6"
+                                        columns="15"
+                                    />
+                                </w:layoutData>
+                            </w:Card>
+                            <!-- dount -->
                             <w:Card
                                 id="IdDonutCard"
-                                manifest="{manifests>/Donut}"
+                                manifest="{filemanifests>/DonutFiles}"
                             >
                                 <w:layoutData>
                                     <f:GridContainerItemLayoutData
@@ -156,24 +393,25 @@
                                     />
                                 </w:layoutData>
                             </w:Card>
+                            <!-- barchert by date -->
+
                             <w:Card
-                                id="todayRecordsCard"
-                                manifest="{manifests>/RecentTable}"
-                                width="900px"
-                                action="onAction"
+                                id="IdBarchart_Cardbydate"
+                                manifest="{filemanifests>/ErrorCountBarChartFiles}"
                             >
                                 <w:layoutData>
                                     <f:GridContainerItemLayoutData
-                                        id="_IDGenGridContainerItemLayoutData"
-                                        minRows="4"
-                                        columns="3"
+                                        id="_IDGenGridContainerIdBarchart_bydateCard"
+                                        rows="4"
+                                        columns="11"
                                     />
                                 </w:layoutData>
                             </w:Card>
                         </f:GridContainer>
+                    <!-- test -->
+
                     </IconTabFilter>
-                    <!-- <IconTabFilter text="Team Distribution" />
-			<IconTabFilter text="Drone Maintenance" />
+			<!-- <IconTabFilter text="Drone Maintenance" />
 			<IconTabFilter text="Drone Development" /> -->
                 </items>
             </IconTabBar>
@@ -194,7 +432,7 @@
                                 vizProperties="{
                         plotArea: {
                             dataLabel: {visible: true},
-                                    colorPalette: ['rgba(0, 153, 255, 1)','rgba(181, 101, 11, 1)','rgba(123, 142, 29, 1)','rgba(214, 23, 112, 1)']
+                                    colorPalette: ['rgba(0, 153, 255, 1)','rgba(123, 142, 29, 1)','rgba(181, 101, 11, 1)','rgba(214, 23, 112, 1)']
 
                         },
                         title: {text:'Day wise errors'},

@@ -15,14 +15,15 @@ annotate service.ErrorLogSet with @(
         TypeName      : 'All integration flow issue',
         TypeNamePlural: 'All integration flow issues',
         Title         : {Value: '{iFlow_name}'},
-        ImageUrl    : {value:'./icons/errorlog.jpg'}
+        ImageUrl      : {value: './icons/errorlog.jpg'}
 
     },
 
     UI.SelectionFields            : [
         createdAt,
         Error_Code,
-        Msg_ID
+        Status,
+        iFlow_name
     ],
 
     UI.LineItem                   : [
@@ -32,8 +33,9 @@ annotate service.ErrorLogSet with @(
         },
         {
 
-            $Type: 'UI.DataField',
-            Value: Source_payload,
+            @UI.Hidden: true,
+            $Type     : 'UI.DataField',
+            Value     : Source_payload,
 
         },
         {
@@ -85,8 +87,9 @@ annotate service.ErrorLogSet with @(
                 Value: iFlow_name
             },
             {
-                $Type: 'UI.DataField',
-                Value: Source_payload
+                @UI.Hidden: true,
+                $Type     : 'UI.DataField',
+                Value     : Source_payload
             },
             {
                 $Type: 'UI.DataField',

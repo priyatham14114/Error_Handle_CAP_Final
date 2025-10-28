@@ -33,7 +33,11 @@
           "title": "{{ErrorLogSet-manage.flpTitle}}",
           "subTitle": "{{ErrorLogSet-manage.flpSubtitle}}",
           "signature": {
-            "parameters": {},
+            "parameters": {
+              "filterStatus": {
+                "required": false
+              }
+            },
             "additionalParameters": "allowed"
           }
         }
@@ -140,7 +144,7 @@
                       "visible": true,
                       "enabled": true,
                       "requiresSelection": true,
-                      "text": "Edit",
+                      "text": "View data",
                       "position": {
                         "placement": "Before",
                         "anchor": "DataFieldForAction::CatalogService.reTrigger"
