@@ -41,6 +41,27 @@
       "[production]": {
         "auth": "xsuaa"
       },
+      "[development]": {
+        "auth": {
+          "kind": "mocked",
+          "users": {
+            "subhash@sap.com": {
+              "password": "subhash",  
+              "ID": "subhash@sap.com",
+              "roles": [
+                "EHAdmin"
+              ]
+            },
+            "user@sap.com": {
+              "password": "Initial",
+              "ID": "user@sap.com",
+              "roles": [
+                "User"
+              ]
+            }
+          }
+        }
+      },
       "destinations": true,
       "connectivity": true,
       "html5-repo": true,
