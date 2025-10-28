@@ -45,6 +45,9 @@ sap.ui.define([
                 oContextBinding.execute().then(function () {
                     var oResponse = oContextBinding.getBoundContext().getObject();
                     sBasePath = oResponse.UIbasePath || "";
+                    if (sBasePath = "") {
+                        console.error("Failed to append UI path to cards")
+                    }
                 }).catch(function (oError) {
                     sap.m.MessageBox.error("Function execution failed: " + oError.message);
                     console.error(oError);
@@ -53,7 +56,7 @@ sap.ui.define([
                 console.error("Failed to get UIBasePath", err.message);
             }
 
-            // Loadnig cars manifest
+            // Loadnig cars manifest for flat payloads
             const sCardManifestUrl = sap.ui.require.toUrl("com/app/errorhandleuifa/cardsManifests/cardsManifest.json");
             const oCardsModel = new JSONModel();
             await new Promise((resolve, reject) => {
@@ -62,7 +65,7 @@ sap.ui.define([
                 oCardsModel.attachRequestFailed(reject);
             });
 
-            // Patch defaultUrl of each card
+            // Patching defaultUrl of each card
             const oData = oCardsModel.getData();
             Object.keys(oData).forEach(cardKey => {
                 const sapCard = oData[cardKey]["sap.card"];
@@ -72,8 +75,194 @@ sap.ui.define([
             });
 
             this.getView().setModel(oCardsModel, "manifests");
+
+            // Loadnig cars manifest for flat payloads
+            const sCardManifestUrl_files = sap.ui.require.toUrl("com/app/errorhandleuifa/cardsManifests/filesCardsManifest.json");
+            const oCardsModel_Files = new JSONModel();
+            await new Promise((resolve, reject) => {
+                oCardsModel_Files.loadData(sCardManifestUrl_files, null, true);
+                oCardsModel_Files.attachRequestCompleted(resolve);
+                oCardsModel_Files.attachRequestFailed(reject);
+            });
+
+            // Patching defaultUrl of each card
+            const oData_Files = oCardsModel_Files.getData();
+            Object.keys(oData_Files).forEach(cardKey => {
+                const sapCard = oData_Files[cardKey]["sap.card"];
+                if (sapCard.configuration && sapCard.configuration.destinations && sapCard.configuration.destinations.srv) {
+                    sapCard.configuration.destinations.srv.defaultUrl = sBasePath + "/odata/v4/catalog/";
+                }
+            });
+
+            this.getView().setModel(oCardsModel_Files, "filemanifests");
             //  test
+        },
+        onAction_TotalErrors: async function (oEvent) {
+            try {
+                sap.m.MessageToast.show("Navigating...");
+
+                if (sap.ushell && sap.ushell.Container) {
+                    const Navigation = await sap.ushell.Container.getServiceAsync("Navigation");
+                    await Navigation.navigate({
+                        target: { semanticObject: "ErrorLogSet", action: "manage" },
+                        params: {}
+                    });
+                } else {
+                    sap.m.MessageToast.show("Navigation service not available outside Fiori Launchpad.");
+                    console.warn("sap.ushell.Container is not available in this runtime environment.");
+                }
+            } catch (error) {
+                sap.m.MessageToast.show("Navigation failed. Please try again later.");
+                console.error("Error during navigation:", error);
+            }
+        },
+        onAction_FailedErrors: async function (oEvent) {
+            try {
+                sap.m.MessageToast.show("Navigating...");
+
+                if (sap.ushell && sap.ushell.Container) {
+                    const Navigation = await sap.ushell.Container.getServiceAsync("Navigation");
+                    await Navigation.navigate({
+                        target: { semanticObject: "ErrorLogSet", action: "manage" },
+                        params: { Status: ["Failed"] }
+
+                    });
+                } else {
+                    sap.m.MessageToast.show("Navigation service not available outside Fiori Launchpad.");
+                    console.warn("sap.ushell.Container is not available in this runtime environment.");
+                }
+            } catch (error) {
+                sap.m.MessageToast.show("Navigation failed. Please try again later.");
+                console.error("Error during navigation:", error);
+            }
+        },
+        onAction_Success: async function (oEvent) {
+            try {
+                sap.m.MessageToast.show("Navigating...");
+
+                if (sap.ushell && sap.ushell.Container) {
+                    const Navigation = await sap.ushell.Container.getServiceAsync("Navigation");
+                    await Navigation.navigate({
+                        target: { semanticObject: "ErrorLogSet", action: "manage" },
+                        params: { Status: ["Success"] }
+
+                    });
+                } else {
+                    sap.m.MessageToast.show("Navigation service not available outside Fiori Launchpad.");
+                    console.warn("sap.ushell.Container is not available in this runtime environment.");
+                }
+            } catch (error) {
+                sap.m.MessageToast.show("Navigation failed. Please try again later.");
+                console.error("Error during navigation:", error);
+            }
+        },
+        onAction_NoRetries: async function (oEvent) {
+            try {
+                sap.m.MessageToast.show("Navigating...");
+
+                if (sap.ushell && sap.ushell.Container) {
+                    const Navigation = await sap.ushell.Container.getServiceAsync("Navigation");
+                    await Navigation.navigate({
+                        target: { semanticObject: "ErrorLogSet", action: "manage" },
+                        params: { Status: ["No retries yet"] }
+
+                    });
+                } else {
+                    sap.m.MessageToast.show("Navigation service not available outside Fiori Launchpad.");
+                    console.warn("sap.ushell.Container is not available in this runtime environment.");
+                }
+            } catch (error) {
+                sap.m.MessageToast.show("Navigation failed. Please try again later.");
+                console.error("Error during navigation:", error);
+            }
+        },
+        onAction_AllFiles: async function (oEvent) {
+            try {
+                sap.m.MessageToast.show("Navigating...");
+
+                if (sap.ushell && sap.ushell.Container) {
+                    const Navigation = await sap.ushell.Container.getServiceAsync("Navigation");
+                    await Navigation.navigate({
+                        target: { semanticObject: "ErrorFilesSet", action: "manage" },
+                        params: {}
+
+                    });
+                } else {
+                    sap.m.MessageToast.show("Navigation service not available outside Fiori Launchpad.");
+                    console.warn("sap.ushell.Container is not available in this runtime environment.");
+                }
+            } catch (error) {
+                sap.m.MessageToast.show("Navigation failed. Please try again later.");
+                console.error("Error during navigation:", error);
+            }
+        },
+        onAction_SuccessFiles: async function (oEvent) {
+            try {
+                sap.m.MessageToast.show("Navigating...");
+
+                if (sap.ushell && sap.ushell.Container) {
+                    const Navigation = await sap.ushell.Container.getServiceAsync("Navigation");
+                    await Navigation.navigate({
+                        target: { semanticObject: "ErrorFilesSet", action: "manage" },
+                        params: { Status: ["Success"] }
+
+
+                    });
+                } else {
+                    sap.m.MessageToast.show("Navigation service not available outside Fiori Launchpad.");
+                    console.warn("sap.ushell.Container is not available in this runtime environment.");
+                }
+            } catch (error) {
+                sap.m.MessageToast.show("Navigation failed. Please try again later.");
+                console.error("Error during navigation:", error);
+            }
+        },
+        onAction_FailedFiles: async function (oEvent) {
+            try {
+                sap.m.MessageToast.show("Navigating...");
+
+                if (sap.ushell && sap.ushell.Container) {
+                    const Navigation = await sap.ushell.Container.getServiceAsync("Navigation");
+                    await Navigation.navigate({
+                        target: { semanticObject: "ErrorFilesSet", action: "manage" },
+                        params: { Status: ["Failed"] }
+
+
+                    });
+                } else {
+                    sap.m.MessageToast.show("Navigation service not available outside Fiori Launchpad.");
+                    console.warn("sap.ushell.Container is not available in this runtime environment.");
+                }
+            } catch (error) {
+                sap.m.MessageToast.show("Navigation failed. Please try again later.");
+                console.error("Error during navigation:", error);
+            }
+        },
+        onAction_NoTriesFiles: async function (oEvent) {
+            try {
+                sap.m.MessageToast.show("Navigating...");
+
+                if (sap.ushell && sap.ushell.Container) {
+                    const Navigation = await sap.ushell.Container.getServiceAsync("Navigation");
+                    await Navigation.navigate({
+                        target: { semanticObject: "ErrorFilesSet", action: "manage" },
+                        params: { Status: ["No retries yet"] }
+
+
+                    });
+                } else {
+                    sap.m.MessageToast.show("Navigation service not available outside Fiori Launchpad.");
+                    console.warn("sap.ushell.Container is not available in this runtime environment.");
+                }
+            } catch (error) {
+                sap.m.MessageToast.show("Navigation failed. Please try again later.");
+                console.error("Error during navigation:", error);
+            }
         }
+
+
+
+
 
     });
 });

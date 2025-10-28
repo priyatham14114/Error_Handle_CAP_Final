@@ -27,11 +27,11 @@
     },
     "crossNavigation": {
       "inbounds": {
-        "ErrorLogSet-manage": {
-          "semanticObject": "ErrorLogSet",
-          "action": "manage",
-          "title": "{{ErrorLogSet-manage.flpTitle}}",
-          "subTitle": "{{ErrorLogSet-manage.flpSubtitle}}",
+        "ErrorHandleOVDashboard-display": {
+          "semanticObject": "ErrorHandleOVDashboard",
+          "action": "display",
+          "title": "{{ErrorHandleOVDashboard-display.flpTitle}}",
+          "subTitle": "{{ErrorHandleOVDashboard-display.flpSubtitle}}",
           "signature": {
             "parameters": {},
             "additionalParameters": "allowed"

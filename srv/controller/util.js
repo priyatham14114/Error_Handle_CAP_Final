@@ -34,7 +34,7 @@ const onBeforeErrorFilesSetCreate = async (req) => {
             req.data.NumberOfRetriggersofFile = 0;
             req.data.Status = "No retries yet";
             // req.data.MIMEType = req.headers.mimetype
-           // req.data.FileName = req.headers.filename
+            // req.data.FileName = req.headers.filename
             req.data.ErrorPayloadFile = Buffer.concat(chunks);
 
         } else {
@@ -89,10 +89,10 @@ const onTriggerSFTP = async (req) => {
 
 // on handler for triggering the integration flow with payload passing case CURRENTLY JSON ONLY
 const onReTriggerIflow = async (req) => {
-    const endPoint = '/http/purchase_order';
+    const endPoint = '/http/errorlogs';
     var selectedId = req.params[0].ID;
     try {
-        var result = await SELECT.one.from("ErrorLogSet").where({ ID: selectedId });
+        var result = await SELECT.one.from("ErrorLogSet").columns(['ID', 'Source_payload', 'NumberOfRetriggers', 'Status', 'Receiver_System']).where({ ID: selectedId });
         if (result.Status === 'Success') {
             req.info(400, 'You can not retrigger success records');
             return
@@ -116,43 +116,35 @@ const onReTriggerIflow = async (req) => {
         } else {
             throw new Error('Can not reach destination.');
         }
-        // Last chnage (FOR XML DATA)
-        // const builder = new XMLBuilder();
-        // const xmlData = builder.build(JSON.parse(result.Source_payload));
-        // const isXML = XMLValidator.validate(xmlData, { allowBooleanAttributes: true });
-
-        // //         {
-        // //   err: {
-        // //     code: string;
-        // //     msg: string,
-        // //     line: number,
-        // //     col: number
-        // //   };
-        // // }
-        // req.notify("XML building completed" + isXML.err.code)
-        // console.log("Generated XML" + isXML.err.msg)
-        // req.info(500, 'Generated XML :' + xmlData);
-
-        // const parser = new XMLParser();
-        // // Convert XML to JSON
-        // const jsonObj = parser.parse(result.Source_payload);
-        // console.log(JSON.stringify(jsonObj))
 
         const response = await executeHttpRequest(destination, {
             method: 'POST',
             url: endPoint,
             data: result.Source_payload,
-            headers: { 'Content-Type': 'application/json', 'Sender': 'CAP', 'Accept': 'application/json', 'CAP_ID' : selectedId , 'TransactionType': 'Reprocess', 'receiver': result.Receiver_System }
-            // 'Sender': 'CAP',
+            headers: {
+                'Content-Type': 'application/json',
+                'Sender': 'CAP',
+                'Accept': 'application/json',
+                'CAP_ID': selectedId,
+                'TransactionType': 'Reprocess',
+                'receiver': result.Receiver_System
+            }
         });
-        const updateStatus = await UPDATE("ErrorLogSet").set({ Status: "Success" }).where({ ID: selectedId });
-        req.notify("Integration flow triggerd successfully See response")
-        req.info(`Status:${JSON.stringify(response.status)} \n ResponseData:${JSON.stringify(response.data)}`)
-        return { 'HTTP request': response, 'SideEffects': updateStatus };
+        if (response && response.status === 200) {
+            await UPDATE("ErrorLogSet").set({ Status: "Success" }).where({ ID: selectedId });
+            req.notify("Integration flow triggerd successfully See response")
+            req.info(`Status:${JSON.stringify(response.status)} \n ResponseData:${JSON.stringify(response.data)}`)
+            return {
+                message: 'Integration flow triggered successfully',
+                httpStatus: response.status,
+                responseData: response.data
+            };
+        }
+
     } catch (error) {
         console.error('HTTP Request Error:', error);
         // req.reject(`Cause:${JSON.stringify(error)}`);
-        req.info(500, 'Reprocess failed :' + error.message);
+        req.reject(500, 'Reprocess failed :' + error.message);
 
     }
 }
@@ -208,23 +200,170 @@ const onSendFileToCPI = async (req) => {
     }
 };
 
-const onReadCount= async () => {
-        const result = await cds.run(
-            SELECT.one.from('ErrorLogSet').columns([
-                { xpr: ['count(*)'], as: 'total' },
-                { xpr: ['sum(case when Status = ', { val: 'Success' }, ' then 1 else 0 end)'], as: 'success' },
-                { xpr: ['sum(case when Status = ', { val: 'Failed' }, ' then 1 else 0 end)'], as: 'failed' },
-                { xpr: ['sum(case when Status = ', { val: 'No retries yet' }, ' then 1 else 0 end)'], as: 'noretries' }
-            ])
-        );
+const onReadCountForDonutLogs = async () => {
+    // for ErrorLogSet
+    const logResult = await cds.run(
+        SELECT.one.from('ErrorLogSet').columns([
+            { xpr: ['count(*)'], as: 'total' },
+            { xpr: ['sum(case when Status = ', { val: 'Success' }, ' then 1 else 0 end)'], as: 'success' },
+            { xpr: ['sum(case when Status = ', { val: 'Failed' }, ' then 1 else 0 end)'], as: 'failed' },
+            { xpr: ['sum(case when Status = ', { val: 'No retries yet' }, ' then 1 else 0 end)'], as: 'noretries' }
+        ])
+    );
+    // Build the returned array 
+    return [
+        // ErrorLogSet KPIs
+        { Identifier: 'TotalNoretries', Value: logResult?.noretries || 0 },
+        { Identifier: 'TotalFailedErrors', Value: logResult?.failed || 0 },
+        { Identifier: 'TotalSuccessErrors', Value: logResult?.success || 0 }
+    ];
+}
 
-        return [
-            { Identifier: 'TotalErrors', Value: result.total },
-            { Identifier: 'TotalSuccessErrors', Value: result.success },
-            { Identifier: 'TotalFailedErrors', Value: result.failed },
-            { Identifier: 'TotalNoretries', Value: result.noretries }
-        ];
+
+const onReadCountForDonutFiles = async () => {
+
+    // for ErrorFilesSet
+    const fileResult = await cds.run(
+        SELECT.one.from('ErrorFilesSet').columns([
+            { xpr: ['count(*)'], as: 'total' },
+            { xpr: ['sum(case when Status = ', { val: 'Success' }, ' then 1 else 0 end)'], as: 'success' },
+            { xpr: ['sum(case when Status = ', { val: 'Failed' }, ' then 1 else 0 end)'], as: 'failed' },
+            { xpr: ['sum(case when Status = ', { val: 'No retries yet' }, ' then 1 else 0 end)'], as: 'noretries' }
+        ])
+    );
+
+    // Build the returned array with both sets
+    return [
+
+        // ErrorFilesSet KPIs
+        { Identifier: 'TotalNoretries', Value: fileResult?.noretries || 0 },
+        { Identifier: 'TotalFailedErrors', Value: fileResult?.failed || 0 },
+        { Identifier: 'TotalSuccessErrors', Value: fileResult?.success || 0 }
+
+    ];
+};
+
+const onDashboardKPIsLogs = async () => {
+    // ErrorLog counts
+    const logs = await cds.run(
+        SELECT.one.from('ErrorLogSet').columns([
+            { xpr: ['count(*)'], as: 'total' },
+            { xpr: ['sum(case when Status = ', { val: 'Success' }, ' then 1 else 0 end)'], as: 'success' },
+            { xpr: ['sum(case when Status = ', { val: 'Failed' }, ' then 1 else 0 end)'], as: 'failed' },
+            { xpr: ['sum(case when Status = ', { val: 'No retries yet' }, ' then 1 else 0 end)'], as: 'noretries' }
+        ])
+    );
+    return {
+        totalErrorLogCount: logs?.total || 0,
+        totalSuccessErrors: logs?.success || 0,
+        totalFailedErrors: logs?.failed || 0,
+        totalNoretries: logs?.noretries || 0
+    };
+
+};
+
+const onDashboardKPIsfiles = async () => {
+    // ErrorFiles counts
+    const files = await cds.run(
+        SELECT.one.from('ErrorFilesSet').columns([
+            { xpr: ['count(*)'], as: 'total' },
+            { xpr: ['sum(case when Status = ', { val: 'Success' }, ' then 1 else 0 end)'], as: 'successfiles' },
+            { xpr: ['sum(case when Status = ', { val: 'Failed' }, ' then 1 else 0 end)'], as: 'failedfiles' },
+            { xpr: ['sum(case when Status = ', { val: 'No retries yet' }, ' then 1 else 0 end)'], as: 'noretriesfiles' }
+        ])
+    );
+    return {
+        totalErrorFilesCount: files?.total || 0,
+        totalFilesSuccess: files?.successfiles || 0,
+        totalFilesFailed: files?.failedfiles || 0,
+        totalFilesNoretrie: files?.noretriesfiles || 0
+    };
+}
+
+const onBeforeReadingLogs = async (req) => {
+
+    const allowedRoles = ['EHAdmin', 'Dept1', 'Dept2', 'Dept3'];
+
+    let userRoles = req.user?.roles || [];
+    if (userRoles && typeof userRoles === 'object' && !Array.isArray(userRoles)) {
+        userRoles = Object.keys(userRoles);
     }
+
+    // If user has no roles at all, reject immediately
+    if (!userRoles || userRoles.length === 0) {
+        req.reject(403, 'Access denied.');
+        return;
+    }
+
+    // If user has EHAdmin
+    if (userRoles.includes('EHAdmin')) {
+        return;
+    }
+    // (excluding EHAdmin)
+    let matchedRoles = userRoles.filter(role => allowedRoles.includes(role));
+    // console.log("Matched Roles" + matchedRoles)
+
+    if (matchedRoles.length === 0) {
+        req.reject(403, 'You do not have the required authorization to access Error Logs.');
+        return;
+    }
+
+    // Apply filter to return only records matching the user's roles
+    if (matchedRoles.length > 0) {
+        req.query.where({ Department: { in: matchedRoles } });
+    }
+}
+const onGetRecentErrorLogs = async (req) => {
+    try {
+        const result = await cds.run(SELECT.from('ErrorLogSet').columns('ID', 'iFlow_name', 'createdAt', 'Status', 'Receiver_System').orderBy({ createdAt: 'desc' }).limit(10));
+        return result;
+    } catch (err) {
+        req.error(500, `Error fetching recent files: ${err.message}`);
+    }
+}
+const onGetRecentErrorFiles = async (req) => {
+    try {
+        const result = await cds.run(SELECT.from('ErrorFilesSet').columns('ID', 'iFlow_name', 'createdAt', 'Status', 'Receiver_System').orderBy({ createdAt: 'desc' }).limit(10));
+        return result;
+    } catch (err) {
+        req.error(500, `Error fetching recent files: ${err.message}`);
+    }
+}
+const onBeforeReadingFiles = async (req) => {
+
+    const allowedRoles = ['EHAdmin', 'Dept1', 'Dept2', 'Dept3'];
+
+    let userRoles = req.user?.roles || [];
+    if (userRoles && typeof userRoles === 'object' && !Array.isArray(userRoles)) {
+        userRoles = Object.keys(userRoles);
+    }
+
+    // If user has no roles at all, reject immediately
+    if (!userRoles || userRoles.length === 0) {
+        req.reject(403, 'Access denied.');
+        return;
+    }
+
+    // If user has EHAdmin
+    if (userRoles.includes('EHAdmin')) {
+        return;
+    }
+    // (excluding EHAdmin)
+    let matchedRoles = userRoles.filter(role => allowedRoles.includes(role));
+    // console.log("Matched Roles" + matchedRoles)
+
+    if (matchedRoles.length === 0) {
+        req.reject(403, 'You do not have the required authorization to access Error Logs.');
+        return;
+    }
+
+    // Apply filter to return only records matching the user's roles
+    if (matchedRoles.length > 0) {
+        req.query.where({ Department: { in: matchedRoles } });
+    }
+}
+
+
 // EXPORTING FUNCTIONS 
 module.exports = {
     onBeforeErrorLogSetCreate,
@@ -232,5 +371,12 @@ module.exports = {
     onBeforeErrorFilesSetCreate,
     onTriggerSFTP,
     onSendFileToCPI,
-    onReadCount
+    onReadCountForDonutLogs,
+    onReadCountForDonutFiles,
+    onDashboardKPIsLogs,
+    onDashboardKPIsfiles,
+    onBeforeReadingLogs,
+    onGetRecentErrorLogs,
+    onGetRecentErrorFiles,
+    onBeforeReadingFiles
 };

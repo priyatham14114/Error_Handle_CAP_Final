@@ -6,6 +6,22 @@
     {
       "name": "uaa.user",
       "description": "UAA"
+    },
+    {
+      "name": "$XSAPPNAME.EHAdmin",
+      "description": "EHAdmin Scope"
+    },
+    {
+      "name": "$XSAPPNAME.Dept1",
+      "description": "Dept1 Scope"
+    },
+    {
+      "name": "$XSAPPNAME.Dept2",
+      "description": "Dept2 Scope"
+    },
+    {
+      "name": "$XSAPPNAME.Dept3",
+      "description": "Dept3 Scope"
     }
   ],
   "role-templates": [
@@ -14,6 +30,64 @@
       "description": "UAA",
       "scope-references": [
         "uaa.user"
+      ]
+    },
+    {
+      "name": "EHAdmin",
+      "description": "EHAdmin Role Template",
+      "scope-references": [
+        "$XSAPPNAME.EHAdmin"
+      ]
+    },
+    {
+      "name": "Dept1",
+      "description": "Dept1 Role Template",
+      "scope-references": [
+        "$XSAPPNAME.Dept1"
+      ]
+    },
+    {
+      "name": "Dept2",
+      "description": "Dept2 Role Template",
+      "scope-references": [
+        "$XSAPPNAME.Dept2"
+      ]
+    },
+    {
+      "name": "Dept3",
+      "description": "Dept3 Role Template",
+      "scope-references": [
+        "$XSAPPNAME.Dept3"
+      ]
+    }
+  ],
+  "role-collections": [
+    {
+      "name": "Role-coll_EHAdmin",
+      "description": "EHAdmin can have access to all data",
+      "role-template-references": [
+        "$XSAPPNAME.EHAdmin"
+      ]
+    },
+    {
+      "name": "Role-coll_Dept1",
+      "description": "Dept1 can access Dept1 data",
+      "role-template-references": [
+        "$XSAPPNAME.Dept1"
+      ]
+    },
+    {
+      "name": "Role-coll_Dept2",
+      "description": "Dept2 can access Dept2 data",
+      "role-template-references": [
+        "$XSAPPNAME.Dept2"
+      ]
+    },
+    {
+      "name": "Role-coll_Dept3",
+      "description": "Dept3 can access Dept3 data",
+      "role-template-references": [
+        "$XSAPPNAME.Dept3"
       ]
     }
   ],
