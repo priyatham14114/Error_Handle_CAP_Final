@@ -1,28 +1,28 @@
 {
-    "TotalErrors": {
+    "TotalErrorFiles": {
         "sap.app": {
-            "id": "Id_Total_Errors",
+            "id": "Id_Total_Error_files",
             "type": "card"
         },
         "sap.card": {
             "type": "Object",
             "header": {
                 "type": "Numeric",
-                "icon": {   
+                "icon": {
                     "src": "sap-icon://sum"
                 },
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsLogs()",
+                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsFiles()",
                         "method": "GET"
                     },
                     "path": ""
                 },
                 "title": "Total Errors",
-                "subtitle": "All errors related to normal payload",
+                "subtitle": "All errors related to files",
                 "unitOfMeasurement": "records",
                 "mainIndicator": {
-                    "number": "{totalErrorLogCount}",
+                    "number": "{totalErrorFilesCount}",
                     "unit": "records",
                     "state": "Error"
                 },
@@ -55,7 +55,7 @@
             "content": {
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsLogs()",
+                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsFiles()",
                         "method": "GET"
                     },
                     "path": "/"
@@ -66,7 +66,7 @@
                         "items": [
                             {
                                 "label": "All errors received from CPI",
-                                "value": "{totalErrorLogCount}"
+                                "value": "{totalErrorFilesCount}"
                             }
                         ]
                     }
@@ -74,9 +74,9 @@
             }
         }
     },
-    "TotalSuccess": {
+    "TotalSuccessFiles": {
         "sap.app": {
-            "id": "Id_Success",
+            "id": "Id_Success_Files",
             "type": "card"
         },
         "sap.card": {
@@ -88,7 +88,7 @@
                 },
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsLogs()",
+                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsFiles()",
                         "method": "GET"
                     },
                     "path": ""
@@ -97,7 +97,7 @@
                 "subtitle": "Retry success",
                 "unitOfMeasurement": "records",
                 "mainIndicator": {
-                    "number": "{totalSuccessErrors}",
+                    "number": "{totalFilesSuccess}",
                     "unit": "records",
                     "state": "Good"
                 },
@@ -130,7 +130,7 @@
             "content": {
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsLogs()",
+                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsFiles()",
                         "parameters": {},
                         "headers": {}
                     },
@@ -142,7 +142,7 @@
                         "items": [
                             {
                                 "label": "All successfully retied messages",
-                                "value": "{totalSuccessErrors}"
+                                "value": "{totalFilesSuccess}"
                             }
                         ]
                     }
@@ -150,9 +150,9 @@
             }
         }
     },
-    "TotalFailed": {
+    "TotalFailedFiles": {
         "sap.app": {
-            "id": "Id_Failed",
+            "id": "Id_Failed_Files",
             "type": "card"
         },
         "sap.card": {
@@ -164,7 +164,7 @@
                 },
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsLogs()",
+                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsFiles()",
                         "method": "GET"
                     },
                     "path": ""
@@ -173,7 +173,7 @@
                 "subtitle": "Retry failed",
                 "unitOfMeasurement": "records",
                 "mainIndicator": {
-                    "number": "{totalFailedErrors}",
+                    "number": "{totalFilesFailed}",
                     "unit": "records",
                     "state": "Error"
                 },
@@ -207,7 +207,7 @@
                 "chartType": "Numeric",
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsLogs()",
+                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsFiles()",
                         "parameters": {},
                         "headers": {}
                     },
@@ -219,7 +219,7 @@
                         "items": [
                             {
                                 "label": "Retried but failed",
-                                "value": "{totalFailedErrors}",
+                                "value": "{totalFilesFailed}",
                                 "valueColor": "Error"
                             }
                         ]
@@ -228,9 +228,9 @@
             }
         }
     },
-    "NoRetries": {
+    "NoRetriesFiles": {
         "sap.app": {
-            "id": "Id_Noretries",
+            "id": "Id_Noretries_Files",
             "type": "card"
         },
         "sap.card": {
@@ -242,7 +242,7 @@
                 },
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsLogs()",
+                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsFiles()",
                         "method": "GET"
                     },
                     "path": ""
@@ -251,7 +251,7 @@
                 "subtitle": "No triggers yet",
                 "unitOfMeasurement": "records",
                 "mainIndicator": {
-                    "number": "{totalNoretries}",
+                    "number": "{totalFilesNoretrie}",
                     "unit": "records",
                     "state": "Critical"
                 },
@@ -284,7 +284,7 @@
             "content": {
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsLogs()",
+                        "url": "{{destinations.srv}}/CatalogService.dashboardKPIsFiles()",
                         "parameters": {},
                         "headers": {}
                     },
@@ -296,7 +296,7 @@
                         "items": [
                             {
                                 "label": "No reprocess yet (Action required)",
-                                "value": "{totalNoretries}"
+                                "value": "{totalFilesNoretrie}"
                             }
                         ]
                     }
@@ -304,9 +304,9 @@
             }
         }
     },
-    "Donut": {
+    "DonutFiles": {
         "sap.app": {
-            "id": "sample.CardsLayout.model.donut",
+            "id": "sample.CardsLayout.model.donut_Files",
             "type": "card"
         },
         "sap.card": {
@@ -345,7 +345,7 @@
                 "dimensionAxis": "color",
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/CatalogService.countErrorsDonutLogs()",
+                        "url": "{{destinations.srv}}/CatalogService.countErrorsDonutFiles()",
                         "parameters": {},
                         "headers": {}
                     },
@@ -366,9 +366,9 @@
             }
         }
     },
-    "RecentTable": {
+    "RecentTableFiles": {
         "sap.app": {
-            "id": "Id_Recent_Table",
+            "id": "Id_Recent_Table_Files",
             "type": "card"
         },
         "sap.card": {
@@ -390,7 +390,7 @@
             "content": {
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/CatalogService.recentErrorLogs()"
+                        "url": "{{destinations.srv}}/CatalogService.recentErrorFiles()"
                     },
                     "path": "/value"
                 },
@@ -427,7 +427,7 @@
             }
         }
     },
-    "LineChart": {
+    "LineChartFiles": {
         "sap.app": {
             "type": "card"
         },
@@ -468,7 +468,7 @@
                 "measureAxis": "valueAxis",
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/ErrorSummarybyFlow"
+                        "url": "{{destinations.srv}}/FilesErrorSummarybyFlow"
                     },
                     "path": "/value"
                 },
@@ -499,9 +499,9 @@
             }
         }
     },
-    "ErrorStatusBar": {
+    "ErrorStatusBarFiles": {
         "sap.app": {
-            "id": "Id_ErrorStatus_Bar",
+            "id": "Id_ErrorStatus_Bar_Files_By_Status",
             "type": "card"
         },
         "sap.card": {
@@ -540,7 +540,7 @@
                 },
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/ErrorSummarybyFlow"
+                        "url": "{{destinations.srv}}/FilesErrorSummarybyFlow"
                     },
                     "path": "/value"
                 },
@@ -590,9 +590,9 @@
             }
         }
     },
-    "ErrorCountBarChart": {
+    "ErrorCountBarChartFiles": {
         "sap.app": {
-            "id": "Id_ErrorStatus_Bar",
+            "id": "Id_ErrorStatus_Bar_Files_Date",
             "type": "card"
         },
         "sap.card": {
@@ -631,7 +631,7 @@
                 },
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/DailyErrorCounts"
+                        "url": "{{destinations.srv}}/FilesDailyErrorCounts"
                     },
                     "path": "/value"
                 },

@@ -16,6 +16,7 @@ using {
 // @odata.draft.enabled
 // @odata.draft.bypass
 // @Capabilities : { Updatable }
+
 entity ErrorLogSet : cuid, managed {
 
   @UI.editable         : true
@@ -59,7 +60,10 @@ entity ErrorLogSet : cuid, managed {
   error_Type         : String;
 
   @title: 'Operation Type'
-  operation_Type     : String
+  operation_Type     : String;
+
+  @title: 'Department'
+  Department         : String;
 
 }
 
@@ -76,9 +80,9 @@ entity ErrorFilesSet : cuid, managed {
 
   @title: 'Error Details File'
   ErrorDetailsFile         : LargeBinary @Core.MediaType: MIMEType;
-  
+
   @title: 'Content Type'
-  MIMEType : String;
+  MIMEType                 : String;
 
   @title: 'Error Description'
   ErrorDescription         : String;
@@ -105,49 +109,9 @@ entity ErrorFilesSet : cuid, managed {
   Receiver_System          : String;
 
   @title: 'Integration Flow'
-  iFlow_name               : String
-  
-}
+  iFlow_name               : String;
 
-// Viw to
-view DailyErrorCounts as
-  select from ErrorLogSet {
-        @title: 'Date'
-    key cast(
-          createdAt as Date
-        ) as errorDate, // date as key
-        @title: 'Total Errors'
-        cast(
-          count(ID) as Integer
-        ) as errorCount, // total errors
-        @title: 'Resolved'
-        cast(
-          sum(case
-                when Status = 'Success'
-                     then 1
-                else 0
-              end) as Integer
-        ) as successCount,
-        @title: 'Failed'
-        cast(
-          sum(case
-                when Status = 'Failed'
-                     then 1
-                else 0
-              end) as Integer
-        ) as failedCount,
-        @title: 'No retries'
-        cast(
-          sum(case
-                when Status = 'No retries yet'
-                     then 1
-                else 0
-              end) as Integer
-        ) as noRetriesCount
-  }
-  group by
-    cast(
-      createdAt as Date
-    )
-  order by
-    errorDate asc;
+  @title: 'Department'
+  Department         : String;
+
+}

@@ -1,6 +1,9 @@
 ### Get error data
 GET http://localhost:4004/odata/v4/catalog/ErrorLogSet HTTP/1.1
 
+# v4/catalog/ErrorLogSet?$filter=iFlow_name eq '3PL'  
+# /odata/v4/catalog/ErrorLogSet?$apply=groupby((iFlow_name,Status),aggregate($count as Count))
+
 ### Get prperty data
 GET http://localhost:4004/odata/v4/catalog/ErrorLogSet('a9c365a9-d73c-4927-944d-e16e43b488c0')?$select=Source_payload HTTP/1.1
 
@@ -45,9 +48,9 @@ Content-Type: application/json
   "ErrorDescription": "Failed to process Purchase Order due to invalid partner data",
   "ShortErrorDescription": "Partner ID not found in master data",
   "ProcessDirectName": "INT_Outbound",
-  "Error_Code": "400",
+  "Error_Code": "500",
   "NumberOfRetriggersofFile": 2,
-  "Status": "FAILED",
+  "Status": "Success",
   "CorrelationID": "b3f6c1e0-9d5a-4f25-97d7-6e7c7d5ef6a2",
   "Receiver_System": "BlueYonder",
   "iFlow_name": "INT_Outbound"
@@ -81,7 +84,7 @@ Content-Type: application/json
 
 
 #####
-GET http://localhost:4004/odata/v4/catalog/ErrorLogSet('97f4954d-9620-4e52-8b1d-1861305cd243') HTTP/1.1
+GET http://localhost:4004/odata/v4/catalog/ErrorLogSet HTTP/1.1
 
 ####
 POST http://localhost:4004/odata/v4/catalog/ErrorLogSet HTTP/1.1
@@ -104,7 +107,7 @@ Content-Type: application/json
   "Error_Msg": "com.sap.xi.mapping.camel.XiMappingException: Cannot produce target element /PurchaseOrderData/Material. Queue has not enough values in context. Target xsd requires a value for this element, but target field mapping does not produce one. Probably the xml-instance is not valid to the source xsd, or the target field mapping does not fulfill the requirement of the target xsd.",
   "Msg_ID": "AGi5aM2u_ZquCnkpe1LjDlrjDmdQ",
   "CorrelationID": "AGi5aM1i0Dq5f507ANZnNEpQXmuC",
-  "iFlow_name": "Test",
+  "iFlow_name": "s4_to_ATEST5",
   "Receiver_System":"Blueyonder"
 }
 
@@ -114,14 +117,15 @@ POST http://localhost:4004/odata/v4/catalog/ErrorLogSet HTTP/1.1
 Content-Type: application/json
 
 {
-  "Source_payload": "<PurchaseOrderData>
-  <PurchaseOrder>PO125367890</PurchaseOrder><CreatedByUser>TEST_TODAY</CreatedByUser><PurchaseOrderDate>2025-09-01</PurchaseOrderDate><companyCode>1000</companyCode><PurchasingOrganization>US01</PurchasingOrganization><PurchasingGroup>PG01</PurchasingGroup><MaterialType>ROH</MaterialType><Material>MAT001</Material><MaterialGroup>MG100</MaterialGroup><Plant>PL01</Plant><StorageLocation>SL01</StorageLocation></PurchaseOrderData>",
+  "Source_payload": "<PurchaseOrderData><PurchaseOrder>PO125367890</PurchaseOrder><CreatedByUser>TEST_TODAY</CreatedByUser><PurchaseOrderDate>2025-09-01</PurchaseOrderDate><companyCode>1000</companyCode><PurchasingOrganization>US01</PurchasingOrganization><PurchasingGroup>PG01</PurchasingGroup><MaterialType>ROH</MaterialType><Material>MAT001</Material><MaterialGroup>MG100</MaterialGroup><Plant>PL01</Plant><StorageLocation>SL01</StorageLocation></PurchaseOrderData>",
   "Error_Code": "500",
   "Error_Msg": "com.sap.xi.mapping.camel.XiMappingException: Cannot produce target element /PurchaseOrderData/Material. Queue has not enough values in context. Target xsd requires a value for this element, but target field mapping does not produce one. Probably the xml-instance is not valid to the source xsd, or the target field mapping does not fulfill the requirement of the target xsd.",
   "Msg_ID": "AGi5aM2u_ZquCnkpe1LjDlrjDmdQ",
   "CorrelationID": "AGi5aM1i0Dq5f507ANZnNEpQXmuC",
   "iFlow_name": "Test",
-  "Receiver_System":"Blueyonder"
+  "Receiver_System":"Blueyonder",
+  "Department":"Dept2"
+
 }
 
 ####
