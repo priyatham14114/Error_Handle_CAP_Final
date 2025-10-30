@@ -468,7 +468,7 @@
                 "measureAxis": "valueAxis",
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/ErrorSummarybyFlow"
+                        "url": "{{destinations.srv}}/CatalogService.getErrorSummaryByFlow()"
                     },
                     "path": "/value"
                 },
@@ -540,7 +540,7 @@
                 },
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/ErrorSummarybyFlow"
+                        "url": "{{destinations.srv}}/CatalogService.getErrorSummaryByFlow()"
                     },
                     "path": "/value"
                 },
@@ -631,7 +631,7 @@
                 },
                 "data": {
                     "request": {
-                        "url": "{{destinations.srv}}/DailyErrorCounts"
+                        "url": "{{destinations.srv}}/CatalogService.getDailyErrorCounts()"
                     },
                     "path": "/value"
                 },

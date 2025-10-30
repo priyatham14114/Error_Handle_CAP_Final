@@ -2,6 +2,7 @@ const { executeHttpRequest } = require('@sap-cloud-sdk/http-client'); // an impo
 const { getDestination } = require('@sap-cloud-sdk/connectivity'); // an import to check destination exist or not
 const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');  // to convert the json to xml
 const { Readable } = require('stream'); // to check the file format is stream or string (base64)
+const { checkUserRoles, checkUserRolesKPIs } = require("../controller/auth.js");
 
 
 // before handler for creation of flat payload ErrorLogSet
@@ -41,7 +42,7 @@ const onBeforeErrorFilesSetCreate = async (req) => {
             req.data.ErrorPayloadFile = null
             req.data.NumberOfRetriggersofFile = 0;
             req.data.Status = "No retries yet";
-            req.data.ProcessDirectName = req.headers.ProcessDirectName
+            // req.data.ProcessDirectName = req.headers.ProcessDirectName
             // req.data.FileName = req.headers.filename
         }
     } catch (err) {
@@ -89,10 +90,10 @@ const onTriggerSFTP = async (req) => {
 
 // on handler for triggering the integration flow with payload passing case CURRENTLY JSON ONLY
 const onReTriggerIflow = async (req) => {
-    const endPoint = '/http/errorlogs';
+    const endPoint = '/http/SFTP_flow';
     var selectedId = req.params[0].ID;
     try {
-        var result = await SELECT.one.from("ErrorLogSet").columns(['ID', 'Source_payload', 'NumberOfRetriggers', 'Status', 'Receiver_System']).where({ ID: selectedId });
+        var result = await SELECT.one.from("ErrorLogSet").columns(['ID', 'Source_payload', 'NumberOfRetriggers', 'Status', 'ProcessDirectName']).where({ ID: selectedId });
         if (result.Status === 'Success') {
             req.info(400, 'You can not retrigger success records');
             return
@@ -127,9 +128,11 @@ const onReTriggerIflow = async (req) => {
                 'Accept': 'application/json',
                 'CAP_ID': selectedId,
                 'TransactionType': 'Reprocess',
-                'receiver': result.Receiver_System
+                'Process Direct Name': result.ProcessDirectName
             }
+
         });
+
         if (response && response.status === 200) {
             await UPDATE("ErrorLogSet").set({ Status: "Success" }).where({ ID: selectedId });
             req.notify("Integration flow triggerd successfully See response")
@@ -139,6 +142,8 @@ const onReTriggerIflow = async (req) => {
                 httpStatus: response.status,
                 responseData: response.data
             };
+        } else {
+            req.reject(500, 'Something went wrong reprocess failed');
         }
 
     } catch (error) {
@@ -153,7 +158,18 @@ const onReTriggerIflow = async (req) => {
 const onSendFileToCPI = async (req) => {
     try {
         var selectedId = req.params[0].ID;
-        var result = await SELECT.one.from("ErrorFilesSet").columns(['PayloadFileName', 'ErrorPayloadFile', 'NumberOfRetriggersofFile', 'Status']).where({ ID: selectedId });
+        var result = await SELECT.one.from("ErrorFilesSet").columns(
+            ['PayloadFileName',
+                'ErrorPayloadFile',
+                'NumberOfRetriggersofFile',
+                'Status',
+                'ProcessDirectName',
+                'MIMEType']).where({ ID: selectedId });
+
+        if (!result.ErrorPayloadFile) {
+            req.info(404, 'No Content');
+            return
+        }
         if (result.Status === 'Success') {
             req.info(400, 'You can not retrigger success records');
             return
@@ -183,14 +199,30 @@ const onSendFileToCPI = async (req) => {
             method: 'POST',
             url: endPoint,
             data: result.ErrorPayloadFile,
-            headers: { 'TransactionType': 'Reprocess', 'Sender': 'CAP' }
+            headers: {
+                'TransactionType': 'Reprocess',
+                'Sender': 'CAP',
+                'CAP_ID': selectedId,
+                'Content-Type': result.MIMEType,
+                'Accept': result.MIMEType,
+                'ProcessDirectName': result.ProcessDirectName
+            }
+
+
 
         });
-        // 'Sender': 'CAP',
-        const updateStatus = await UPDATE("ErrorFilesSet").set({ Status: "Success" }).where({ ID: selectedId });
-        req.notify("Integration flow triggerd successfully See response")
-        req.info(`Status:${JSON.stringify(response.status)} \n ResponseData: Response data hidden because it may contain large text`)
-        return response
+        if (response && response.status === 200) {
+            await UPDATE("ErrorFilesSet").set({ Status: "Success" }).where({ ID: selectedId });
+            req.notify("Integration flow triggerd successfully See response")
+            req.info(`Status:${JSON.stringify(response.status)} \n ResponseData: Response data hidden because it may contain large text`)
+            return {
+                message: 'Integration flow triggered successfully',
+                httpStatus: response.status,
+                responseData: response.data
+            };
+        } else {
+            req.reject(500, 'Something went wrong reprocess failed');
+        }
 
     } catch (error) {
         console.error('HTTP Request Error:', error.message);
@@ -200,7 +232,20 @@ const onSendFileToCPI = async (req) => {
     }
 };
 
-const onReadCountForDonutLogs = async () => {
+const onReadCountForDonutLogs = async (req) => {
+
+    const roles = await checkUserRolesKPIs(req);
+    if (roles === null) {
+        req.reject(403, 'Unauthorized');
+        return;
+    }
+
+    let whereClause = {};
+
+    if (!roles.includes('EHAdmin')) {
+        whereClause = { Department: { in: roles } };
+    }
+
     // for ErrorLogSet
     const logResult = await cds.run(
         SELECT.one.from('ErrorLogSet').columns([
@@ -208,7 +253,7 @@ const onReadCountForDonutLogs = async () => {
             { xpr: ['sum(case when Status = ', { val: 'Success' }, ' then 1 else 0 end)'], as: 'success' },
             { xpr: ['sum(case when Status = ', { val: 'Failed' }, ' then 1 else 0 end)'], as: 'failed' },
             { xpr: ['sum(case when Status = ', { val: 'No retries yet' }, ' then 1 else 0 end)'], as: 'noretries' }
-        ])
+        ]).where(whereClause)
     );
     // Build the returned array 
     return [
@@ -220,7 +265,19 @@ const onReadCountForDonutLogs = async () => {
 }
 
 
-const onReadCountForDonutFiles = async () => {
+const onReadCountForDonutFiles = async (req) => {
+
+    const roles = await checkUserRolesKPIs(req);
+    if (roles === null) {
+        req.reject(403, 'Unauthorized');
+        return;
+    }
+
+    let whereClause = {};
+
+    if (!roles.includes('EHAdmin')) {
+        whereClause = { Department: { in: roles } };
+    }
 
     // for ErrorFilesSet
     const fileResult = await cds.run(
@@ -229,7 +286,7 @@ const onReadCountForDonutFiles = async () => {
             { xpr: ['sum(case when Status = ', { val: 'Success' }, ' then 1 else 0 end)'], as: 'success' },
             { xpr: ['sum(case when Status = ', { val: 'Failed' }, ' then 1 else 0 end)'], as: 'failed' },
             { xpr: ['sum(case when Status = ', { val: 'No retries yet' }, ' then 1 else 0 end)'], as: 'noretries' }
-        ])
+        ]).where(whereClause)
     );
 
     // Build the returned array with both sets
@@ -243,7 +300,18 @@ const onReadCountForDonutFiles = async () => {
     ];
 };
 
-const onDashboardKPIsLogs = async () => {
+const onDashboardKPIsLogs = async (req) => {
+    const roles = await checkUserRolesKPIs(req);
+    if (roles === null) {
+        req.reject(403, 'Unauthorized');
+        return;
+    }
+
+    let whereClause = {};
+
+    if (!roles.includes('EHAdmin')) {
+        whereClause = { Department: { in: roles } };
+    }
     // ErrorLog counts
     const logs = await cds.run(
         SELECT.one.from('ErrorLogSet').columns([
@@ -251,7 +319,7 @@ const onDashboardKPIsLogs = async () => {
             { xpr: ['sum(case when Status = ', { val: 'Success' }, ' then 1 else 0 end)'], as: 'success' },
             { xpr: ['sum(case when Status = ', { val: 'Failed' }, ' then 1 else 0 end)'], as: 'failed' },
             { xpr: ['sum(case when Status = ', { val: 'No retries yet' }, ' then 1 else 0 end)'], as: 'noretries' }
-        ])
+        ]).where(whereClause)
     );
     return {
         totalErrorLogCount: logs?.total || 0,
@@ -262,7 +330,20 @@ const onDashboardKPIsLogs = async () => {
 
 };
 
-const onDashboardKPIsfiles = async () => {
+const onDashboardKPIsfiles = async (req) => {
+
+    const roles = await checkUserRolesKPIs(req);
+    if (roles === null) {
+        req.reject(403, 'Unauthorized');
+        return;
+    }
+
+    let whereClause = {};
+
+    if (!roles.includes('EHAdmin')) {
+        whereClause = { Department: { in: roles } };
+    }
+
     // ErrorFiles counts
     const files = await cds.run(
         SELECT.one.from('ErrorFilesSet').columns([
@@ -270,7 +351,7 @@ const onDashboardKPIsfiles = async () => {
             { xpr: ['sum(case when Status = ', { val: 'Success' }, ' then 1 else 0 end)'], as: 'successfiles' },
             { xpr: ['sum(case when Status = ', { val: 'Failed' }, ' then 1 else 0 end)'], as: 'failedfiles' },
             { xpr: ['sum(case when Status = ', { val: 'No retries yet' }, ' then 1 else 0 end)'], as: 'noretriesfiles' }
-        ])
+        ]).where(whereClause)
     );
     return {
         totalErrorFilesCount: files?.total || 0,
@@ -280,88 +361,187 @@ const onDashboardKPIsfiles = async () => {
     };
 }
 
-const onBeforeReadingLogs = async (req) => {
-
-    const allowedRoles = ['EHAdmin', 'Dept1', 'Dept2', 'Dept3'];
-
-    let userRoles = req.user?.roles || [];
-    if (userRoles && typeof userRoles === 'object' && !Array.isArray(userRoles)) {
-        userRoles = Object.keys(userRoles);
-    }
-
-    // If user has no roles at all, reject immediately
-    if (!userRoles || userRoles.length === 0) {
-        req.reject(403, 'Access denied.');
-        return;
-    }
-
-    // If user has EHAdmin
-    if (userRoles.includes('EHAdmin')) {
-        return;
-    }
-    // (excluding EHAdmin)
-    let matchedRoles = userRoles.filter(role => allowedRoles.includes(role));
-    // console.log("Matched Roles" + matchedRoles)
-
-    if (matchedRoles.length === 0) {
-        req.reject(403, 'You do not have the required authorization to access Error Logs.');
-        return;
-    }
-
-    // Apply filter to return only records matching the user's roles
-    if (matchedRoles.length > 0) {
-        req.query.where({ Department: { in: matchedRoles } });
-    }
-}
 const onGetRecentErrorLogs = async (req) => {
+    const roles = await checkUserRolesKPIs(req);
+    if (roles === null) {
+        req.reject(403, 'Unauthorized');
+        return;
+    }
+
+    let whereClause = {};
+
+    if (!roles.includes('EHAdmin')) {
+        whereClause = { Department: { in: roles } };
+    }
+
     try {
-        const result = await cds.run(SELECT.from('ErrorLogSet').columns('ID', 'iFlow_name', 'createdAt', 'Status', 'Receiver_System').orderBy({ createdAt: 'desc' }).limit(10));
+        const result = await cds.run(SELECT.from('ErrorLogSet')
+            .columns('ID',
+                'iFlow_name',
+                'createdAt',
+                'Status',
+                'Receiver_System').orderBy({ createdAt: 'desc' }).limit(10).where(whereClause));
         return result;
     } catch (err) {
         req.error(500, `Error fetching recent files: ${err.message}`);
     }
 }
 const onGetRecentErrorFiles = async (req) => {
+    const roles = await checkUserRolesKPIs(req);
+    if (roles === null) {
+        req.reject(403, 'Unauthorized');
+        return;
+    }
+
+    let whereClause = {};
+
+    if (!roles.includes('EHAdmin')) {
+        whereClause = { Department: { in: roles } };
+    }
     try {
-        const result = await cds.run(SELECT.from('ErrorFilesSet').columns('ID', 'iFlow_name', 'createdAt', 'Status', 'Receiver_System').orderBy({ createdAt: 'desc' }).limit(10));
+
+        const result = await cds.run(SELECT.from('ErrorFilesSet')
+            .columns('ID',
+                'iFlow_name',
+                'createdAt',
+                'Status',
+                'Receiver_System').orderBy({ createdAt: 'desc' }).limit(10).where(whereClause));
         return result;
     } catch (err) {
         req.error(500, `Error fetching recent files: ${err.message}`);
     }
 }
-const onBeforeReadingFiles = async (req) => {
 
-    const allowedRoles = ['EHAdmin', 'Dept1', 'Dept2', 'Dept3'];
+const onBeforeReadingLogs = async (req) => {
+    const roles = await checkUserRoles(req);
 
-    let userRoles = req.user?.roles || [];
-    if (userRoles && typeof userRoles === 'object' && !Array.isArray(userRoles)) {
-        userRoles = Object.keys(userRoles);
-    }
-
-    // If user has no roles at all, reject immediately
-    if (!userRoles || userRoles.length === 0) {
-        req.reject(403, 'Access denied.');
+    if (roles === null) {
         return;
     }
 
-    // If user has EHAdmin
-    if (userRoles.includes('EHAdmin')) {
-        return;
-    }
-    // (excluding EHAdmin)
-    let matchedRoles = userRoles.filter(role => allowedRoles.includes(role));
-    // console.log("Matched Roles" + matchedRoles)
-
-    if (matchedRoles.length === 0) {
-        req.reject(403, 'You do not have the required authorization to access Error Logs.');
+    if (roles.includes('EHAdmin')) {
         return;
     }
 
-    // Apply filter to return only records matching the user's roles
-    if (matchedRoles.length > 0) {
-        req.query.where({ Department: { in: matchedRoles } });
+    if (roles.length > 0) {
+        req.query.where({ Department: { in: roles } });
     }
 }
+
+const onGetDailyErrorCounts = async (req) => {
+    const roles = await checkUserRolesKPIs(req);
+    if (!roles) {
+        req.reject(403, 'Unauthorized');
+        return;
+    }
+
+    let whereClause = {}
+    if (!roles.includes('EHAdmin')) {
+        whereClause = { Department: { in: roles } };
+    }
+
+    const dailyCounts = await cds.run(
+        SELECT.from('ErrorLogSet')
+            .columns([
+                { xpr: ['cast(createdAt as Date)'], as: 'errorDate' },
+                { xpr: ['count(*)'], as: 'errorCount' },
+                { xpr: ["sum(case when Status = 'Success' then 1 else 0 end)"], as: 'successCount' },
+                { xpr: ["sum(case when Status = 'Failed' then 1 else 0 end)"], as: 'failedCount' },
+                { xpr: ["sum(case when Status = 'No retries yet' then 1 else 0 end)"], as: 'noRetriesCount' }
+            ])
+            .groupBy('cast(createdAt as Date)')
+            .orderBy('errorDate asc').where(whereClause)
+    );
+    return dailyCounts
+};
+const onGetFilesDailyErrorCounts = async (req) => {
+    const roles = await checkUserRolesKPIs(req);
+    if (!roles) {
+        req.reject(403, 'Unauthorized');
+        return;
+    }
+
+    let whereClause = {}
+    if (!roles.includes('EHAdmin')) {
+        whereClause = { Department: { in: roles } };
+    }
+
+    const dailyCounts = await cds.run(
+        SELECT.from('ErrorFilesSet')
+            .columns([
+                { xpr: ['cast(createdAt as Date)'], as: 'errorDate' },
+                { xpr: ['count(*)'], as: 'errorCount' },
+                { xpr: ["sum(case when Status = 'Success' then 1 else 0 end)"], as: 'successCount' },
+                { xpr: ["sum(case when Status = 'Failed' then 1 else 0 end)"], as: 'failedCount' },
+                { xpr: ["sum(case when Status = 'No retries yet' then 1 else 0 end)"], as: 'noRetriesCount' }
+            ])
+            .groupBy('cast(createdAt as Date)')
+            .orderBy('errorDate asc').where(whereClause)
+    );
+    return dailyCounts
+};
+
+const onGetErrorSummaryByFlow = async (req) => {
+
+    const roles = await checkUserRolesKPIs(req);
+    if (!roles) {
+        req.reject(403, 'Unauthorized');
+        return;
+    }
+
+    let whereClause = {};
+
+    if (!roles.includes('EHAdmin')) {
+        whereClause = { Department: { in: roles } };
+    }
+
+    const result = await cds.run(
+        SELECT.from('ErrorLogSet')
+            .columns([
+                'iFlow_name',
+                { xpr: ["sum(case when Status = 'No retries yet' then 1 else 0 end)"], as: 'NoRetries' },
+                { xpr: ["sum(case when Status = 'Failed' then 1 else 0 end)"], as: 'Failed' },
+                { xpr: ["sum(case when Status = 'Success' then 1 else 0 end)"], as: 'Success' },
+                { xpr: ['count(ID)'], as: 'TotalErrors' }
+            ])
+            .where(whereClause)
+            .groupBy('iFlow_name')
+            .orderBy('iFlow_name asc')
+    );
+
+    return result;
+}
+const onGetFilesErrorSummaryByFlow = async (req) => {
+
+    const roles = await checkUserRolesKPIs(req);
+    if (!roles) {
+        req.reject(403, 'Unauthorized');
+        return;
+    }
+
+    let whereClause = {}
+
+    if (!roles.includes('EHAdmin')) {
+        whereClause = { Department: { in: roles } };
+    }
+
+    const result = await cds.run(
+        SELECT.from('ErrorFilesSet')
+            .columns([
+                'iFlow_name',
+                { xpr: ["sum(case when Status = 'No retries yet' then 1 else 0 end)"], as: 'NoRetries' },
+                { xpr: ["sum(case when Status = 'Failed' then 1 else 0 end)"], as: 'Failed' },
+                { xpr: ["sum(case when Status = 'Success' then 1 else 0 end)"], as: 'Success' },
+                { xpr: ['count(ID)'], as: 'TotalErrors' }
+            ])
+            .where(whereClause)
+            .groupBy('iFlow_name')
+            .orderBy('iFlow_name asc')
+    );
+
+    return result;
+}
+
 
 
 // EXPORTING FUNCTIONS 
@@ -378,5 +558,8 @@ module.exports = {
     onBeforeReadingLogs,
     onGetRecentErrorLogs,
     onGetRecentErrorFiles,
-    onBeforeReadingFiles
+    onGetDailyErrorCounts,
+    onGetFilesDailyErrorCounts,
+    onGetErrorSummaryByFlow,
+    onGetFilesErrorSummaryByFlow
 };

@@ -158,7 +158,7 @@
                             <w:Card
                                 id="todayRecordsCardf2"
                                 manifest="{manifests>/RecentTable}"
-                                action="onAction"
+                                action="onAction_Recentlogs"
                             >
                                 <w:layoutData>
                                     <f:GridContainerItemLayoutData
