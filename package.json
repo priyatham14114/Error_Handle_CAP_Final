@@ -49,7 +49,7 @@
               "password": "subhash",  
               "ID": "subhash@sap.com",
               "roles": [
-                "EHAdmin"
+                "Dept2"
               ]
             },
             "user@sap.com": {

@@ -107,7 +107,7 @@ Content-Type: application/json
   "Error_Msg": "com.sap.xi.mapping.camel.XiMappingException: Cannot produce target element /PurchaseOrderData/Material. Queue has not enough values in context. Target xsd requires a value for this element, but target field mapping does not produce one. Probably the xml-instance is not valid to the source xsd, or the target field mapping does not fulfill the requirement of the target xsd.",
   "Msg_ID": "AGi5aM2u_ZquCnkpe1LjDlrjDmdQ",
   "CorrelationID": "AGi5aM1i0Dq5f507ANZnNEpQXmuC",
-  "iFlow_name": "s4_to_ATEST5",
+  "iFlow_name": "s4_to_ATEST14",
   "Receiver_System":"Blueyonder"
 }
 
