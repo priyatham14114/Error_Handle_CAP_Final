@@ -35,7 +35,7 @@ annotate service.ErrorLogSet with @(
 
             @UI.Hidden: true,
             $Type     : 'UI.DataField',
-            Value     : Source_payload,
+            Value     : Source_payload
 
         },
         {
