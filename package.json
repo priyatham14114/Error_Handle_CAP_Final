@@ -46,7 +46,7 @@
           "kind": "mocked",
           "users": {
             "subhash@sap.com": {
-              "password": "subhash",  
+              "password": "subhash",
               "ID": "subhash@sap.com",
               "roles": [
                 "Dept2"
