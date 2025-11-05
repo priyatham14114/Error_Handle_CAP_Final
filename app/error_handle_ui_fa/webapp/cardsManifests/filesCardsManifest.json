@@ -417,7 +417,14 @@
                     "actions": [
                         {
                             "type": "Navigation",
-                            "url": ""
+                            "url": "",
+                            "parameters": {
+                                "ID": "{ID}",
+                                "iFlow_name": "{iFlow_name}",
+                                "createdAt": "{createdAt}",
+                                "Status": "{Status}",
+                                "Receiver_System": "{Receiver_System}"
+                            }
                         }
                     ]
                 },

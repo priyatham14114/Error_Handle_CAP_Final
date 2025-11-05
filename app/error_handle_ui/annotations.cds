@@ -8,7 +8,6 @@ annotate service.ErrorLogSet with {
     modifiedBy @UI.HiddenFilter: false;
 };
 
-
 annotate service.ErrorLogSet with @(
 
     UI.HeaderInfo                 : {
