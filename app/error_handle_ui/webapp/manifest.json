@@ -67,7 +67,8 @@
       "libs": {
         "sap.m": {},
         "sap.ui.core": {},
-        "sap.fe.templates": {}
+        "sap.fe.templates": {},
+        "sap.f": {}
       }
     },
     "contentDensities": {
@@ -99,17 +100,28 @@
       "css": []
     },
     "routing": {
-      "config": {},
+      "config": {
+        "flexibleColumnLayout": {
+          "defaultTwoColumnLayoutType": "TwoColumnsMidExpanded",
+          "defaultThreeColumnLayoutType": "ThreeColumnsEndExpanded"
+        },
+        "routerClass": "sap.f.routing.Router"
+      },
       "routes": [
         {
           "pattern": ":?query:",
           "name": "ErrorLogSetList",
-          "target": "ErrorLogSetList"
+          "target": [
+            "ErrorLogSetList"
+          ]
         },
         {
           "pattern": "ErrorLogSet({key}):?query:",
           "name": "ErrorLogSetObjectPage",
-          "target": "ErrorLogSetObjectPage"
+          "target": [
+            "ErrorLogSetList",
+            "ErrorLogSetObjectPage"
+          ]
         }
       ],
       "targets": {
@@ -168,7 +180,9 @@
                 }
               }
             }
-          }
+          },
+          "controlAggregation": "beginColumnPages",
+          "contextPattern": ""
         },
         "ErrorLogSetObjectPage": {
           "type": "Component",
@@ -179,9 +193,17 @@
               "editableHeaderContent": false,
               "contextPath": "/ErrorLogSet"
             }
-          }
+          },
+          "controlAggregation": "midColumnPages",
+          "contextPattern": "/ErrorLogSet({key})"
         }
       }
+    },
+    "rootView": {
+      "viewName": "sap.fe.templates.RootContainer.view.Fcl",
+      "type": "XML",
+      "async": true,
+      "id": "appRootView"
     }
   },
   "sap.fiori": {

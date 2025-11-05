@@ -85,10 +85,6 @@ modules:
               ServiceInstanceName: Error_Handle_CAP-html5-service
               ServiceKeyName: Error_Handle_CAP-repo-host-key
               sap.cloud.service: POC_EH_managed
-            - Name: POC_EH_managed_Error_Handle_CAP_repo_host_rt
-              ServiceInstanceName: Error_Handle_CAP-html5-service-runtime
-              ServiceKeyName: Error_Handle_CAP-repo-host-key-runtime
-              sap.cloud.service: POC_EH_managed
             - Authentication: OAuth2UserTokenExchange
               HTML5.DynamicDestination: true
               Name: POC_EH_managed_Error_Handle_CAP_auth

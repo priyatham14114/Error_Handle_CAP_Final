@@ -1,5 +1,4 @@
 using CPI_errordetails_schema as E_Schema from '../db/schema';
-// using CPI_errordetails_schema_Views as E_Schema_view from '../db/views';
 using {reusable.types as types} from './reusableTypes';
 
 // @requires: 'authenticated-user'
@@ -22,15 +21,6 @@ service CatalogService {
     actions {
       action reTriggerFile()
     }
-
-  // function fileErrorsCount() returns array of ErrorCountType;
-
-  // // VIEW for date wise count
-  // entity DailyErrorCounts        as projection on E_Schema_view.DailyErrorCounts;
-  // entity FilesDailyErrorCounts   as projection on E_Schema_view.FilesDailyErrorCounts;
-  // entity ErrorSummarybyFlow      as projection on E_Schema_view.ErrorSummarybyFlow;
-  // entity FilesErrorSummarybyFlow as projection on E_Schema_view.FilesErrorSummarybyFlow;
-
 
   @readonly
   function getAppConfig()               returns {
