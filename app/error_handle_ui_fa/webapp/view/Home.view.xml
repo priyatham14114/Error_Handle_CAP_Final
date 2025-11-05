@@ -158,7 +158,7 @@
                             <w:Card
                                 id="todayRecordsCardf2"
                                 manifest="{manifests>/RecentTable}"
-                                action="onAction_Recentlogs"
+                                action="onAction_RecentLogsTable"
                             >
                                 <w:layoutData>
                                     <f:GridContainerItemLayoutData
@@ -343,7 +343,7 @@
                             <w:Card
                                 id="todayRecordsCard"
                                 manifest="{filemanifests>/RecentTableFiles}"
-                                action="onAction"
+                                action="onAction_RecentFiles"
                             >
                                 <w:layoutData>
                                     <f:GridContainerItemLayoutData
@@ -409,114 +409,11 @@
                             </w:Card>
                         </f:GridContainer>
                     <!-- test -->
-
                     </IconTabFilter>
 			<!-- <IconTabFilter text="Drone Maintenance" />
 			<IconTabFilter text="Drone Development" /> -->
                 </items>
             </IconTabBar>
-            <!-- Bars start -->
-            <suite:ChartContainer
-                id="chartContainer123"
-                width="100%"
-            >
-                <suite:content>
-                    <suite:ChartContainerContent id="chartContainerContent333">
-                        <suite:content>
-                            <viz:VizFrame
-                                id="idBarChart"
-                                width="auto"
-                                height="600px"
-                                uiConfig="{applicationSet:'fiori'}"
-                                vizType="column"
-                                vizProperties="{
-                        plotArea: {
-                            dataLabel: {visible: true},
-                                    colorPalette: ['rgba(0, 153, 255, 1)','rgba(123, 142, 29, 1)','rgba(181, 101, 11, 1)','rgba(214, 23, 112, 1)']
-
-                        },
-                        title: {text:'Day wise errors'},
-                        valueAxis: {
-                            title: {
-                                visible: true,
-                                text: 'Count'
-                            },
-                            label: {
-                                formatString: '#,##0'
-                            },
-                            interval: {
-                                value: 5
-                            }
-                        },
-                        categoryAxis: {
-                            title: {
-                                visible: true,
-                                text: 'Date'
-                            }
-                        }
-                    }"
-                                selectData="onSelectData"
-                                renderComplete="handleRenderComplete"
-                            >
-                                <viz:dataset>
-                                    <viz.data:FlattenedDataset
-                                        id="flattenData0"
-                                        data="{oChartModel>/value}"
-                                    >
-                                        <viz.data:dimensions>
-                                            <viz.data:DimensionDefinition
-                                                id="_IDGenDimensionDefinition2"
-                                                name="Date"
-                                                value="{oChartModel>errorDate}"
-                                            />
-                                        </viz.data:dimensions>
-                                        <viz.data:measures>
-                                            <viz.data:MeasureDefinition
-                                                id="_IDGenMeasureDefinition4"
-                                                name="TotalErrors"
-                                                value="{oChartModel>errorCount}"
-                                            />
-                                            <viz.data:MeasureDefinition
-                                                id="_IDGenMeasureDefinition2"
-                                                name="Success"
-                                                value="{oChartModel>successCount}"
-                                            />
-                                            <viz.data:MeasureDefinition
-                                                id="_IDGenMeasureDefinition3"
-                                                name="Failed"
-                                                value="{oChartModel>failedCount}"
-                                            />
-                                            <viz.data:MeasureDefinition
-                                                id="_IDGenMeasureDefinitio"
-                                                name="NoRetries"
-                                                value="{oChartModel>noRetriesCount}"
-                                            />
-                                        </viz.data:measures>
-                                    </viz.data:FlattenedDataset>
-                                </viz:dataset>
-                                <viz:feeds>
-                                    <viz.feeds:FeedItem
-                                        id="_IDGenFeedItem6"
-                                        uid="valueAxis"
-                                        type="Measure"
-                                        values="TotalErrors,Success,Failed,NoRetries"
-                                    />
-                                    <viz.feeds:FeedItem
-                                        id="_IDGenFeedItem7"
-                                        uid="categoryAxis"
-                                        type="Dimension"
-                                        values="Date"
-                                    />
-                                </viz:feeds>
-                                <viz:dependents>
-                                    <viz:Popover id="idPopOver" />
-                                </viz:dependents>
-                            </viz:VizFrame>
-                        </suite:content>
-                    </suite:ChartContainerContent>
-                </suite:content>
-            </suite:ChartContainer>
-            <!-- Bars end -->
         </VBox>
     </ScrollContainer>
 </mvc:View>

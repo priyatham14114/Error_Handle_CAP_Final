@@ -43,10 +43,16 @@ module.exports = cds.service.impl(async function (srv) {
   srv.on('getFilesDailyErrorCounts', onGetFilesDailyErrorCounts);
   srv.on('getFilesErrorSummaryByFlow', onGetFilesErrorSummaryByFlow);
 
-  srv.on('getAppConfig', async () => {
-    return {
-      UIbasePath: process.env.UI_BASE_PATH || ''
-    };
+  srv.on('getAppConfig', async (req) => {
+    try {
+      const path = process.env.UI_BASE_PATH || '';
+      console.log('Fetched UI_BASE_PATH:', path);
+      return path;
+    } catch (error) {
+      req.reject("Failed to read env");
+    }
   });
+
+
 
 });
