@@ -8,7 +8,7 @@
             "type": "Object",
             "header": {
                 "type": "Numeric",
-                "icon": {   
+                "icon": {
                     "src": "sap-icon://sum"
                 },
                 "data": {
@@ -388,6 +388,7 @@
                 }
             },
             "content": {
+                "rowPress": "onRowPress",
                 "data": {
                     "request": {
                         "url": "{{destinations.srv}}/CatalogService.recentErrorLogs()"
@@ -417,7 +418,14 @@
                     "actions": [
                         {
                             "type": "Navigation",
-                            "url": ""
+                            "url": "",
+                            "parameters": {
+                                "ID":"{ID}",
+                                "iFlow_name": "{iFlow_name}",
+                                "createdAt": "{createdAt}",
+                                "Status": "{Status}",
+                                "Receiver_System": "{Receiver_System}"
+                            }
                         }
                     ]
                 },
