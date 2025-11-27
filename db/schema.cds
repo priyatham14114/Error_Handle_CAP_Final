@@ -5,12 +5,13 @@ using {
   managed
 } from '@sap/cds/common';
 
-// @restrict: [
-//   { grant: 'READ',   to: 'error_admin' },
-//   // { grant: 'CREATE', to: 'error_creator' },
-//   { grant: 'UPDATE', to: 'error_admin' },
-//   { grant: 'DELETE', to: 'error_admin'  }
-// ]
+// @(restrict: [
+//   {
+//     grant: ['DELETE'],
+//     to   : 'EHAdmin'
+//   },
+//   {grant: 'READ'}
+// ])
 
 // @Capabilities.InsertRestrictions: {Insertable: true}
 // @odata.draft.enabled
@@ -53,6 +54,9 @@ entity ErrorLogSet : cuid, managed {
   @UI.lineItem.position: 80
   Status             : String;
 
+  @UI.Hidden : true
+  StatusCriticality  : Integer @cds.persistence.exists: false;
+
   @title: 'Receiver System'
   Receiver_System    : String;
 
@@ -64,6 +68,9 @@ entity ErrorLogSet : cuid, managed {
 
   @title: 'Department'
   Department         : String;
+
+  @title: 'Process Direct Name'
+  ProcessDirectName  : String;
 
 }
 
@@ -102,6 +109,8 @@ entity ErrorFilesSet : cuid, managed {
   @title: 'Status'
   Status                   : String;
 
+  StatusCriticality        : Integer     @cds.persistence.exists: false;
+
   @title: 'Correlation Id'
   CorrelationID            : String;
 
@@ -112,6 +121,8 @@ entity ErrorFilesSet : cuid, managed {
   iFlow_name               : String;
 
   @title: 'Department'
-  Department         : String;
+  Department               : String;
+
+  ReqHeaders : String;
 
 }
