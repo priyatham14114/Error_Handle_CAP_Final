@@ -1,6 +1,6 @@
 const { executeHttpRequest } = require('@sap-cloud-sdk/http-client'); // an import to call destination
 const { getDestination } = require('@sap-cloud-sdk/connectivity'); // an import to check destination exist or not
-const { XMLParser, XMLBuilder, XMLValidator } = require('fast-xml-parser');  // to convert the json to xml
+const { XMLParser, XMLBuilder, XMLValIDator } = require('fast-xml-parser');  // to convert the json to xml
 const { Readable } = require('stream'); // to check the file format is stream or string (base64)
 const { checkUserRoles, checkUserRolesKPIs } = require("../controller/auth.js");
 
@@ -8,9 +8,8 @@ const { checkUserRoles, checkUserRolesKPIs } = require("../controller/auth.js");
 // before handler for creation of flat payload ErrorLogSet
 const onBeforeErrorLogSetCreate = async (req) => {
     try {
-        // req.data.IsActiveEntity = true;
         req.data.NumberOfRetriggers = 0;
-        req.data.Status = "No retries yet";
+        req.data.Status = req.data.Status || "No retries yet";
         if (req.data.Source_payload) {
             if (typeof req.data.Source_payload !== 'string') {
                 req.data.Source_payload = JSON.stringify(req.data.Source_payload);
@@ -33,17 +32,13 @@ const onBeforeErrorFilesSetCreate = async (req) => {
                 chunks.push(chunk);
             }
             req.data.NumberOfRetriggersofFile = 0;
-            req.data.Status = "No retries yet";
-            // req.data.MIMEType = req.headers.mimetype
-            // req.data.FileName = req.headers.filename
+            req.data.Status = req.data.Status || "No retries yet";
             req.data.ErrorPayloadFile = Buffer.concat(chunks);
 
         } else {
             req.data.ErrorPayloadFile = null
             req.data.NumberOfRetriggersofFile = 0;
-            req.data.Status = "No retries yet";
-            // req.data.ProcessDirectName = req.headers.ProcessDirectName
-            // req.data.FileName = req.headers.filename
+            req.data.Status = req.data.Status || "No retries yet";
         }
     } catch (err) {
         console.error("Error reading file:", err.message);
@@ -51,186 +46,399 @@ const onBeforeErrorFilesSetCreate = async (req) => {
     }
 };
 
-// on handler for just triggering the integration flow (no payload passing case)
-// Note: button hidden coz no use
-const onTriggerSFTP = async (req) => {
-    const endPoint = '';  // no config endpoint
-    try {
-        const destination = await getDestination({
-            destinationName: 'CPI_Destination'
-        });
-        if (destination) {
-            destination.authTokens?.forEach(authToken => {
-                if (authToken.error) {
-                    throw new Error(`Error in authToken ${authToken.error}`);
-                }
-            });
-        } else {
-            throw new Error('Can not reach destination.');
-        }
-
-        const response = await executeHttpRequest(destination, {
-            method: 'POST',
-            url: endPoint,
-            data: "",   //no payload is passing here
-            headers: { 'TransactionType': 'Reprocess' }
-            // 'Sender': 'CAP',
-        });
-        // req.notify("Integration flow triggerd successfully")
-        // req.info(`Status:${JSON.stringify(response.status)}`)
-        // console.log("response______"+ response)
-        return { Status: JSON.stringify(response.status), Message: response.data };
-    } catch (error) {
-        console.error('HTTP Request Error:', error);
-        // req.reject(`Cause:${JSON.stringify(error)}`);
-        req.reject({ status: error.status, message: error.data });
-        return { Status: error.status, Message: error.data };
-    }
-}
-
 // on handler for triggering the integration flow with payload passing case CURRENTLY JSON ONLY
 const onReTriggerIflow = async (req) => {
-    const endPoint = '/http/SFTP_flow';
-    var selectedId = req.params[0].ID;
-    try {
-        var result = await SELECT.one.from("ErrorLogSet").columns(['ID', 'Source_payload', 'NumberOfRetriggers', 'Status', 'ProcessDirectName']).where({ ID: selectedId });
-        if (result.Status === 'Success') {
-            req.info(400, 'You can not retrigger success records');
-            return
-        }
-        await UPDATE("ErrorLogSet").set({ NumberOfRetriggers: result.NumberOfRetriggers + 1, Status: "Failed" }).where({ ID: selectedId });
-    } catch (error) {
-        console.error(error.message)
-        return req.info(500, 'Internal Server error occured')
-    }
+
+    const selectedID = req.params[0].ID;
 
     try {
+
+        const record = await SELECT.one.from("ErrorLogSet")
+            .columns(['ID', 'Source_payload', 'Status', 'NumberOfRetriggers'])
+            .where({ ID: selectedID });
+
+        if (!record) {
+            return req.error(404, "Record not found");
+        }
+
+        if (record.Status === 'Success') {
+            return req.info(400, "You cannot reprocess Success records");
+        }
+
+        const tx = cds.tx();
+
+        const updated = await tx.run(
+            UPDATE("ErrorLogSet").set({
+                Status: "Reprocessing",
+                NumberOfRetriggers: { '+=': 1 }
+            }).where({
+                ID: selectedID,
+                Status: { '!=': "Reprocessing" }
+            })
+        );
+
+        await tx.commit();
+
+        if (updated === 0) {
+            const existing = await SELECT.one.from("ErrorLogSet")
+                .columns(['modifiedBy'])
+                .where({ ID: selectedID });
+
+            return req.info(409, `Reprocessing already in progress by user ${existing.modifiedBy}`);
+        }
+
         const destination = await getDestination({
-            destinationName: 'CPI_Destination'
+            destinationName: "CPI_Destination"
         });
-        if (destination) {
-            destination.authTokens?.forEach(authToken => {
-                if (authToken.error) {
-                    throw new Error(`Error in authToken ${authToken.error}`);
-                }
-            });
-        } else {
-            throw new Error('Can not reach destination.');
+
+        if (!destination) {
+            throw new Error("Could not reach CPI destination");
         }
 
         const response = await executeHttpRequest(destination, {
-            method: 'POST',
-            url: endPoint,
-            data: result.Source_payload,
+            method: "POST",
+            url: "/http/s4payload",
+            data: record.Source_payload,
             headers: {
-                'Content-Type': 'application/json',
-                'Sender': 'CAP',
-                'Accept': 'application/json',
-                'CAP_ID': selectedId,
-                'TransactionType': 'Reprocess',
-                'Process Direct Name': result.ProcessDirectName
+                "Content-Type": "application/json",
+                "Sender": "CAP",
+                "CAP_ID": selectedID,
+                "TransactionType": "Reprocess"
             }
-
         });
 
-        if (response && response.status === 200) {
-            await UPDATE("ErrorLogSet").set({ Status: "Success" }).where({ ID: selectedId });
-            req.notify("Integration flow triggerd successfully See response")
-            req.info(`Status:${JSON.stringify(response.status)} \n ResponseData:${JSON.stringify(response.data)}`)
+        const allowedCodes = [200, 201, 202, 204];
+        if (response && allowedCodes.includes(response.status)) {
+            const tx2 = cds.tx();
+            await tx2.run(
+                UPDATE("ErrorLogSet")
+                    .set({ Status: "Success" })
+                    .where({ ID: selectedID })
+            );
+            await tx2.commit();
+            req.notify("Integration Flow triggered successfully");
+            req.info(200, `Message processing completed See response text below \n Response: ${response.data}`);
             return {
-                message: 'Integration flow triggered successfully',
+                message: "IFlow executed successfully",
                 httpStatus: response.status,
                 responseData: response.data
             };
-        } else {
-            req.reject(500, 'Something went wrong reprocess failed');
         }
-
     } catch (error) {
-        console.error('HTTP Request Error:', error);
-        // req.reject(`Cause:${JSON.stringify(error)}`);
-        req.reject(500, 'Reprocess failed :' + error.message);
-
+        console.error("Reprocess Error:", error);
+        const tx3 = cds.tx();
+        await tx3.run(
+            UPDATE("ErrorLogSet")
+                .set({ Status: "Failed" })
+                .where({ ID: selectedID })
+        );
+        await tx3.commit();
+        req.reject(500, `Reprocess failed please check the updated error details`);
+        return { Status: 500, message: error.message, }
     }
-}
+};
 
 // on handler for just triggering the integration flow IN FILE CASE
+
 const onSendFileToCPI = async (req) => {
+
+    const selectedID = req.params[0].ID;
+
     try {
-        var selectedId = req.params[0].ID;
-        var result = await SELECT.one.from("ErrorFilesSet").columns(
-            ['PayloadFileName',
+        const record = await SELECT.one.from("ErrorFilesSet")
+            .columns([
+                'PayloadFileName',
                 'ErrorPayloadFile',
                 'NumberOfRetriggersofFile',
                 'Status',
                 'ProcessDirectName',
-                'MIMEType']).where({ ID: selectedId });
+                'ReqHeaders',
+                'MIMEType'
+            ])
+            .where({ ID: selectedID });
 
-        if (!result.ErrorPayloadFile) {
-            req.info(404, 'No Content');
-            return
+        if (!record) {
+            return req.info(404, "Record not found");
         }
-        if (result.Status === 'Success') {
-            req.info(400, 'You can not retrigger success records');
-            return
+
+        if (record.Status === "Success") {
+            return req.info(400, "You cannot reprocess Success records");
         }
-        await UPDATE("ErrorFilesSet").set({ NumberOfRetriggersofFile: result.NumberOfRetriggersofFile + 1, Status: "Failed" }).where({ ID: selectedId });
-        if (!result.ErrorPayloadFile) return req.info(404, 'File content empty');
-        // var mimeType = result.MIMEType || 'application/octet-stream';
-    } catch (error) {
-        console.error('HTTP Request Error:', error);
-        // req.reject(`Cause:${JSON.stringify(error)}`);
-        return req.info(500, `Failed to read selected record: ${error.message}`);
 
-    }
-    try {
-        const endPoint = '/http/SFTP_flow';
-        const destination = await getDestination({ destinationName: 'CPI_Destination' });
-        if (destination) {
-            destination.authTokens?.forEach(authToken => {
-                if (authToken.error) {
-                    throw new Error(`Error in authToken ${authToken.error}`);
-                }
-            });
-        } else {
-            throw new Error('Can not reach destination.');
+        const tx = cds.tx();
+        const updated = await tx.run(
+            UPDATE("ErrorFilesSet")
+                .set({
+                    Status: "Reprocessing",
+                    NumberOfRetriggersofFile: { "+=": 1 }
+                })
+                .where({
+                    ID: selectedID,
+                    Status: { '!=': "Reprocessing" }
+                })
+        );
+
+        await tx.commit();
+
+        if (updated === 0) {
+            const existing = await SELECT.one.from("ErrorFilesSet")
+                .columns(['modifiedBy'])
+                .where({ ID: selectedID });
+
+            return req.info(
+                409,
+                `Reprocessing already in progress by user ${existing?.modifiedBy}`
+            );
         }
-        const response = await executeHttpRequest(destination, {
-            method: 'POST',
-            url: endPoint,
-            data: result.ErrorPayloadFile,
-            headers: {
-                'TransactionType': 'Reprocess',
-                'Sender': 'CAP',
-                'CAP_ID': selectedId,
-                'Content-Type': result.MIMEType,
-                'Accept': result.MIMEType,
-                'ProcessDirectName': result.ProcessDirectName
-            }
 
-
-
+        const destination = await getDestination({
+            destinationName: "CPI_Destination"
         });
-        if (response && response.status === 200) {
-            await UPDATE("ErrorFilesSet").set({ Status: "Success" }).where({ ID: selectedId });
-            req.notify("Integration flow triggerd successfully See response")
-            req.info(`Status:${JSON.stringify(response.status)} \n ResponseData: Response data hidden because it may contain large text`)
+
+        if (!destination) {
+            throw new Error("Cannot reach CPI destination.");
+        }
+
+        destination.authTokens?.forEach(token => {
+            if (token.error) {
+                throw new Error(`Auth token error: ${token.error}`);
+            }
+        });
+
+        const defaultHeaders = {
+            "TransactionType": "Reprocess",
+            "Sender": "CAP",
+            "CAP_ID": selectedID,
+            "Content-Type": record.MIMEType,
+            "Accept": record.MIMEType,
+            "ProcessDirectName": record.ProcessDirectName
+        };
+
+        const dynamicHeaders =
+            typeof record.ReqHeaders === "string"
+                ? JSON.parse(record.ReqHeaders)
+                : {};
+
+        const allHeaders = { ...defaultHeaders, ...dynamicHeaders };
+        const response = await executeHttpRequest(destination, {
+            method: "POST",
+            url: "/http/SFTPFlow",
+            data: record.ErrorPayloadFile,
+            headers: allHeaders
+        });
+
+        const allowed = [200, 201, 202, 204];
+        if (response && allowed.includes(response.status)) {
+            const tx2 = cds.tx();
+            await tx2.run(
+                UPDATE("ErrorFilesSet")
+                    .set({ Status: "Success" })
+                    .where({ ID: selectedID })
+            );
+            await tx2.commit();
+
+            req.notify("Integration Flow triggered successfully.");
+            req.info(200, `Message processing completed See response text below \n Response: HIDden`);
             return {
-                message: 'Integration flow triggered successfully',
+                message: "File reprocessing triggered successfully",
                 httpStatus: response.status,
-                responseData: response.data
+                responseData: 'HIDden'
             };
-        } else {
-            req.reject(500, 'Something went wrong reprocess failed');
         }
 
     } catch (error) {
-        console.error('HTTP Request Error:', error.message);
-        // req.reject(`Cause:${JSON.stringify(error)}`);
-        req.info(500, 'Reprocess failed :' + error.message);
 
+        console.error("Reprocess Error:", error.message);
+        const txErr = cds.tx();
+        await txErr.run(
+            UPDATE("ErrorFilesSet")
+                .set({ Status: "Failed" })
+                .where({ ID: selectedID })
+        );
+        await txErr.commit();
+
+        return req.info(
+            500,
+            "Reprocess failed check updated error details.\n" + error.message
+        );
     }
 };
+
+
+// on handler for just triggering the integration flow IN FILE CASE
+
+// const onSendFileToCPI = async (req) => {
+//     let result;
+//     let selectedID
+//     try {
+//         selectedID = req.params[0].ID;
+
+//         result = await SELECT.one.from("ErrorFilesSet").columns(
+//             ['PayloadFileName', 'ErrorPayloadFile', 'NumberOfRetriggersofFile', 'Status',
+//                 'ProcessDirectName', 'ReqHeaders', 'MIMEType', 'modifiedAt']
+//         ).where({ ID: selectedID });
+
+//         if (!result) {
+//             req.info(404, 'Record not found');
+//             return;
+//         }
+
+//         if (result.Status === 'Success') {
+//             req.info(400, 'You cannot retrigger success records');
+//             return;
+//         }
+
+//         const lock = await UPDATE("ErrorFilesSet")
+//             .set({ NumberOfRetriggersofFile: { '+=': 1 }, Status: "Reprocessing" })
+//             .where({ ID: selectedID, Status: { '!=': 'Reprocessing' }, modifiedAt: result.modifiedAt });
+
+//         // If no rows updated, either locked or modified concurrently
+//         if (lock === 0) {
+
+//             const existing = await SELECT.one.from("ErrorFilesSet").columns('modifiedBy').where({ ID: selectedID });
+//             return req.info(409, `Reprocessing already in progress by user ${existing.modifiedBy}`);
+
+//         }
+
+//     } catch (error) {
+//         console.error('HTTP Request Error:', error);
+//         req.info(500, `Failed to read selected record: ${error.message}`);
+//         return;
+//     }
+
+//     try {
+//         const endPoint = '/http/s4payload';
+//         const destination = await getDestination({ destinationName: 'CPI_Destination' });
+//         if (!destination) {
+//             throw new Error('Cannot reach destination.');
+//         }
+
+//         destination.authTokens?.forEach(authToken => {
+//             if (authToken.error) {
+//                 throw new Error(`Error in authToken ${authToken.error}`);
+//             }
+//         });
+
+//         const Headers_1 = {
+//             'TransactionType': 'Reprocess',
+//             'Sender': 'CAP',
+//             'CAP_ID': req.params[0].ID,
+//             'Content-Type': result.MIMEType,
+//             'Accept': result.MIMEType,
+//             'ProcessDirectName': result.ProcessDirectName
+//         };
+//         const Headers_2 = typeof result.ReqHeaders === 'string' ? JSON.parse(result.ReqHeaders) : {};
+//         const allHeaders = { ...Headers_1, ...Headers_2 };
+
+//         const response = await executeHttpRequest(destination, {
+//             method: 'POST',
+//             url: endPoint,
+//             data: result.ErrorPayloadFile,
+//             headers: allHeaders,
+//         });
+
+//         if (response && response.status === 200) {
+//             await UPDATE("ErrorFilesSet").set({ Status: "Success" }).where({ ID: selectedID });
+//             req.notify("Integration flow triggered successfully. See response.");
+//             req.info(`Status: ${response.status} \nResponse data hIDden due to size.`);
+//             return {
+//                 message: 'Integration flow triggered successfully',
+//                 httpStatus: response.status,
+//                 responseData: response.data
+//             };
+//         } else {
+//             req.info(500, 'Something went wrong');
+//         }
+
+//     } catch (error) {
+//         console.error('HTTP Request Error:', error.message);
+//         console.log('HTTP Request Error:', error.message);
+//         try {
+//             if (req.params && req.params[0] && req.params[0].ID) {
+//                 await UPDATE("ErrorFilesSet").set({ Status: "Failed" }).where({ ID: req.params[0].ID });
+//             }
+//         } catch (updateError) {
+//             console.error('Failed to update status after error:', updateError.message);
+//             req.info(500, 'Failed to update status after error: ' + updateError.message);
+//         }
+//         req.info(500, 'Reprocess failed check the updated error details and try again. \n' + error.message);
+//         return;
+//     }
+// };
+
+
+
+// const onSendFileToCPI = async (req) => {
+//     try {
+//         var selectedID = req.params[0].ID;
+//         var result = await SELECT.one.from("ErrorFilesSet").columns(
+//             ['PayloadFileName',
+//                 'ErrorPayloadFile',
+//                 'NumberOfRetriggersofFile',
+//                 'Status',
+//                 'ProcessDirectName',
+//                 'MIMEType']).where({ ID: selectedID });
+
+//         // if (!result.ErrorPayloadFile) return req.info(404, 'File content empty');
+
+//         if (result.Status === 'Success') {
+//             req.info(400, 'You can not retrigger success records');
+//             return
+//         }
+//         await UPDATE("ErrorFilesSet").set({ NumberOfRetriggersofFile: result.NumberOfRetriggersofFile + 1, Status: "Failed" }).where({ ID: selectedID });
+//     } catch (error) {
+//         console.error('HTTP Request Error:', error);
+//         // req.reject(`Cause:${JSON.stringify(error)}`);
+//         return req.info(500, `Failed to read selected record: ${error.message}`);
+
+//     }
+//     try {
+//         const endPoint = '/http/s4payload';
+//         const destination = await getDestination({ destinationName: 'CPI_Destination' });
+//         if (destination) {
+//             destination.authTokens?.forEach(authToken => {
+//                 if (authToken.error) {
+//                     throw new Error(`Error in authToken ${authToken.error}`);
+//                 }
+//             });
+//         } else {
+//             throw new Error('Can not reach destination.');
+//         }
+//         const response = await executeHttpRequest(destination, {
+//             method: 'POST',
+//             url: endPoint,
+//             data: result.ErrorPayloadFile,
+//             headers: {
+//                 'TransactionType': 'Reprocess',
+//                 'Sender': 'CAP',
+//                 'CAP_ID': selectedID,
+//                 'Content-Type': result.MIMEType,
+//                 'Accept': result.MIMEType,
+//                 'ProcessDirectName': result.ProcessDirectName
+//             }
+
+//         });
+//         const allowedCodes = [200, 201, 202, 204]
+//         if (response && allowedCodes.includes(response.status)) {
+//             await UPDATE("ErrorFilesSet").set({ Status: "Success" }).where({ ID: selectedID });
+//             req.notify("Integration flow triggerd successfully See response")
+//             req.info(`Status:${JSON.stringify(response.status)} \n ResponseData: Response data hIDden because it may contain large text`)
+//             return {
+//                 message: 'Integration flow triggered successfully',
+//                 httpStatus: response.status,
+//                 responseData: response.data
+//             };
+//         } else {
+//             req.reject(500, 'Something went wrong reprocess failed');
+//         }
+
+//     } catch (error) {
+//         console.error('HTTP Request Error:', error.message);
+//         // req.reject(`Cause:${JSON.stringify(error)}`);
+//         req.info(500, 'Reprocess failed :' + error.message);
+
+//     }
+// };
 
 const onReadCountForDonutLogs = async (req) => {
 
@@ -258,9 +466,9 @@ const onReadCountForDonutLogs = async (req) => {
     // Build the returned array 
     return [
         // ErrorLogSet KPIs
-        { Identifier: 'TotalNoretries', Value: logResult?.noretries || 0 },
-        { Identifier: 'TotalFailedErrors', Value: logResult?.failed || 0 },
-        { Identifier: 'TotalSuccessErrors', Value: logResult?.success || 0 }
+        { IDentifier: 'TotalNoretries', Value: logResult?.noretries || 0 },
+        { IDentifier: 'TotalFailedErrors', Value: logResult?.failed || 0 },
+        { IDentifier: 'TotalSuccessErrors', Value: logResult?.success || 0 }
     ];
 }
 
@@ -293,9 +501,9 @@ const onReadCountForDonutFiles = async (req) => {
     return [
 
         // ErrorFilesSet KPIs
-        { Identifier: 'TotalNoretries', Value: fileResult?.noretries || 0 },
-        { Identifier: 'TotalFailedErrors', Value: fileResult?.failed || 0 },
-        { Identifier: 'TotalSuccessErrors', Value: fileResult?.success || 0 }
+        { IDentifier: 'TotalNoretries', Value: fileResult?.noretries || 0 },
+        { IDentifier: 'TotalFailedErrors', Value: fileResult?.failed || 0 },
+        { IDentifier: 'TotalSuccessErrors', Value: fileResult?.success || 0 }
 
     ];
 };
@@ -542,6 +750,52 @@ const onGetFilesErrorSummaryByFlow = async (req) => {
     return result;
 }
 
+const onUpdateErrorLogSet = async (req) => {
+    try {
+        const { ID } = req.data;
+        const result = await cds.tx(req).run(
+            UPDATE("ErrorLogSet").set(req.data).where({ ID })
+        );
+        if (!result || result === 0) {
+            req.error(404, `Record with ID ${ID} not found`);
+            return; // Error is passed up to CAP framework
+        }
+        return { status: "updated", statusCode: 200, message: "Record updated successfully", location: ID };
+    } catch (error) {
+        req.error(500, `Update failed: ${error.message}`);
+        return;
+    }
+};
+
+
+const onUpdateErrorFilesSet = async (req) => {
+    try {
+        let response = await cds.tx(req).run(
+            UPDATE("ErrorFilesSet").set(req.data).where({ ID: req.data.ID })
+        );
+        if (!response) {
+            return req.res.status(404).json({
+                status: "Not found",
+                message: `Record with ID ${req.data.ID} not found`
+            });
+        }
+
+        req.res.status(200).json({
+            statusCode: 200,
+            status: "updated",
+            message: "Record updated successfully",
+            location: req.data.ID
+        });
+        return { status: "updated", statusCode: 200, message: "Record updated successfully", location: req.data.ID };
+
+    } catch (error) {
+        console.log()
+        req.res.status(500).json({ error: error.message });
+    }
+};
+
+
+
 
 
 // EXPORTING FUNCTIONS 
@@ -549,7 +803,6 @@ module.exports = {
     onBeforeErrorLogSetCreate,
     onReTriggerIflow,
     onBeforeErrorFilesSetCreate,
-    onTriggerSFTP,
     onSendFileToCPI,
     onReadCountForDonutLogs,
     onReadCountForDonutFiles,
@@ -561,5 +814,7 @@ module.exports = {
     onGetDailyErrorCounts,
     onGetFilesDailyErrorCounts,
     onGetErrorSummaryByFlow,
-    onGetFilesErrorSummaryByFlow
+    onGetFilesErrorSummaryByFlow,
+    onUpdateErrorLogSet,
+    onUpdateErrorFilesSet
 };
