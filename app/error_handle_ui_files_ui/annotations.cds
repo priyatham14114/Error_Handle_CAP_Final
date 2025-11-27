@@ -22,7 +22,7 @@ annotate service.ErrorFilesSet with actions {
 
 annotate service.ErrorFilesSet with @(
 
-      UI.HeaderInfo                 : {
+    UI.HeaderInfo                 : {
         TypeName      : 'All file related issues',
         TypeNamePlural: 'All file related issues',
         Title         : {Value: '{iFlow_name}'}
@@ -52,6 +52,10 @@ annotate service.ErrorFilesSet with @(
             },
             {
                 $Type: 'UI.DataField',
+                Value: MIMEType,
+            },
+            {
+                $Type: 'UI.DataField',
                 Value: ErrorDescription,
             },
             {
@@ -67,8 +71,9 @@ annotate service.ErrorFilesSet with @(
                 Value: NumberOfRetriggersofFile
             },
             {
-                $Type: 'UI.DataField',
-                Value: Status
+                $Type      : 'UI.DataField',
+                Value      : Status,
+                Criticality: StatusCriticality
             },
             {
                 $Type: 'UI.DataField',
@@ -132,6 +137,11 @@ annotate service.ErrorFilesSet with @(
             Value: ErrorDetailsFile,
         },
         {
+            $Type      : 'UI.DataField',
+            Value      : Status,
+            Criticality: StatusCriticality
+        },
+        {
             $Type: 'UI.DataField',
             Value: createdAt,
         },
@@ -150,3 +160,9 @@ annotate service.ErrorFilesSet with @(
         }
     ],
 );
+
+
+annotate service.ErrorFilesSet @(Common.SideEffects #reTriggerFile: {
+    SourceEntities  : ['ErrorFilesSet'],
+    TargetProperties: ['*']
+});

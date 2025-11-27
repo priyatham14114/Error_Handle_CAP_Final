@@ -33,11 +33,7 @@
           "title": "{{ErrorLogSet-manage.flpTitle}}",
           "subTitle": "{{ErrorLogSet-manage.flpSubtitle}}",
           "signature": {
-            "parameters": {
-              "filterStatus": {
-                "required": false
-              }
-            },
+            "parameters": {},
             "additionalParameters": "allowed"
           }
         }
