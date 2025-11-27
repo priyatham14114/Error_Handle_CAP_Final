@@ -1,9 +1,8 @@
-// INPORTING FUNCTIONS FROM UTIL
+// IMPORTING FUNCTIONS FROM UTIL
 const cds = require('@sap/cds');
 const { onBeforeErrorLogSetCreate,
   onReTriggerIflow,
   onBeforeErrorFilesSetCreate,
-  onTriggerSFTP,
   onSendFileToCPI,
   onReadCountForDonutLogs,
   onReadCountForDonutFiles,
@@ -15,7 +14,9 @@ const { onBeforeErrorLogSetCreate,
   onGetDailyErrorCounts,
   onGetFilesDailyErrorCounts,
   onGetErrorSummaryByFlow,
-  onGetFilesErrorSummaryByFlow
+  onGetFilesErrorSummaryByFlow,
+  onUpdateErrorLogSet,
+  onUpdateErrorFilesSet
 } = require("./controller/util.js");
 
 
@@ -27,8 +28,9 @@ module.exports = cds.service.impl(async function (srv) {
   srv.before(["CREATE"], "ErrorLogSet", onBeforeErrorLogSetCreate)   // BEFORE HANDLER FOR OPERATIONS BEFORE CREATION OF ErrorLogSet
   srv.before(["CREATE"], "ErrorFilesSet", onBeforeErrorFilesSetCreate) // BEFORE HANDLER FOR OPERATIONS BEFORE CREATION OF ErrorFilesSet
   srv.on(["reTrigger"], "ErrorLogSet", onReTriggerIflow) // ON HANDLER FOR TRIGGER IFLOW WITH PAYLOAD
-  srv.on(["TriggerSFTP"], onTriggerSFTP) // ON HANDLER FOR TRIGGER IFLOW WITHOUT PAYLOAD (NOT USED IN APPLICATION)
   srv.on(["reTriggerFile"], onSendFileToCPI) // ON HANDLER FOR RE-TRIGGER FILE
+  srv.on("UPDATE", "ErrorLogSet", onUpdateErrorLogSet);
+  srv.on("UPDATE", "ErrorFilesSet", onUpdateErrorFilesSet);
 
 
   // All Overview poage KPIs
@@ -53,6 +55,13 @@ module.exports = cds.service.impl(async function (srv) {
     }
   });
 
+  srv.after('READ', ['ErrorLogSet', 'ErrorFilesSet'], (each) => {
+    each.StatusCriticality =
+      each.Status === 'Success' ? 3 :
+        each.Status === 'Failed' ? 1 :
+          each.Status === 'No retries yet' ? 2 : 
+          each.Status === 'Reprocessing' ? 0 : 0;
+  });
 
 
 });
