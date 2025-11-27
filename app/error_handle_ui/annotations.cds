@@ -58,24 +58,18 @@ annotate service.ErrorLogSet with @(
             Value: NumberOfRetriggers
         },
         {
-            $Type: 'UI.DataField',
-            Value: Status
+            $Type      : 'UI.DataField',
+            Value      : Status,
+            Criticality: StatusCriticality
         },
         // cust Btns
         {
             $Type      : 'UI.DataFieldForAction',
             Action     : 'CatalogService.reTrigger',
             Label      : 'Retrigger',
-            // IsMassAction: true,
             Criticality: #Positive,
         // Inline : true,
         }
-    //  {
-    //     $Type      : 'UI.DataFieldForAction',
-    //     Action     : 'CatalogService.TriggerSFTP',
-    //     Label      : 'Trigger SFTP Server',
-    //     Criticality: #Positive
-    // }
     ],
 
     UI.FieldGroup #GeneratedGroup : {
@@ -111,9 +105,10 @@ annotate service.ErrorLogSet with @(
                 Value: NumberOfRetriggers
             },
             {
-                $Type: 'UI.DataField',
-                Value: Status
-            }
+                $Type      : 'UI.DataField',
+                Value      : Status,
+                Criticality: StatusCriticality
+            },
         ],
     },
 
@@ -123,12 +118,6 @@ annotate service.ErrorLogSet with @(
     //     Label : 'General Information',
     //     Target: '@UI.FieldGroup#GeneratedGroup'
     // }],
-
-
-    // createdAt
-    // createdBy
-    // modifiedAt
-    // modifiedBy
 
     UI.FieldGroup #GeneratedGroup2: {
         $Type: 'UI.FieldGroupType',
@@ -164,8 +153,44 @@ annotate service.ErrorLogSet with @(
             ID    : 'GeneratedFacet2',
             Label : 'User Information',
             Target: '@UI.FieldGroup#GeneratedGroup2'
+        },
+        {
+            $Type : 'UI.CollectionFacet',
+            ID    : 'GeneratedFacet3',
+            Label : 'Error Details',
+            Facets: [{
+                $Type : 'UI.ReferenceFacet',
+                Target: '@UI.LineItem',
+                Label : 'Table'
+            }]
         }
     ],
 
 
 );
+
+
+annotate service.ErrorLogSet @(Common.SideEffects #reTrigger: {
+    SourceEntities  : ['ErrorLogSet'],
+    TargetProperties: ['*']
+});
+
+// test
+// annotate service.ErrorLogSet with @(
+//     Common: {
+//         // SideEffects #reTrigger: {
+//         //     $Type           : 'Common.SideEffectsType',
+//         //     SourceProperties: ['Source_payload'], // Optional: fields that trigger the effect
+//         //     SourceEntities  : ['ErrorLogSet'],       // Optional: entities that trigger the effect
+//         //     TargetProperties: ['*'], // Properties to refresh
+//         //     TargetEntities  : ['ErrorLogSet'],  // Entities/tables to refresh
+//         // },
+//         // You can also define side effects for specific actions
+//         SideEffects #reTrigger: {
+//             $Type           : 'Common.SideEffectsType',
+//             SourceEntities  : ['ErrorLogSet'],
+//             TargetEntities  : ['ErrorLogSet']
+//         }
+//     }
+// )
+// test

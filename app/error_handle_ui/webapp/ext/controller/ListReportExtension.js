@@ -88,7 +88,7 @@ sap.ui.define([
                                 }
                                 const oContext = aContexts[0];
                                 if (oContext.getObject().Status === "Success") {
-                                    sap.m.MessageBox.error("Error in updating Source Payload : You can not update success records")
+                                    sap.m.MessageBox.error("Error in updating Source Payload. You can not update success records")
                                     return
                                 }
 

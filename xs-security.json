@@ -92,9 +92,5 @@
     }
   ],
   "attributes": [],
-  "oauth2-configuration": {
-    "trusted-domains": [
-      "https://39143116trial.launchpad.cfapps.us10.hana.ondemand.com"
-    ]
-  }
+  "oauth2-configuration": {}
 }

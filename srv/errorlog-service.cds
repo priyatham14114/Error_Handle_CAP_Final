@@ -2,21 +2,20 @@ using CPI_errordetails_schema as E_Schema from '../db/schema';
 using {reusable.types as types} from './reusableTypes';
 
 // @requires: 'authenticated-user'
-service CatalogService {
+service CatalogService @(Common.SideEffects: {
+  SourceProperties: ['*'],
+  TargetProperties: ['*']
+}) {
 
-  action   TriggerSFTP()                returns {
-    Status  : String;
-    Message : LargeString;
-  };
-
-      @UI.UpdateHidden   : false
+  // @UI.UpdateHidden: false
+  // @UI.DeleteHidden   : true
+  @Common.SideEffects: {TargetEntities: ['ErrorLogSet']}
   entity ErrorLogSet   as projection on E_Schema.ErrorLogSet
     actions {
-
-      @Common.SideEffects: [{TargetEntities: ['ErrorLogSet']}]
       action reTrigger();
     }
 
+  @Common.SideEffects: [{TargetEntities: ['ErrorFilesSet']}]
   entity ErrorFilesSet as projection on E_Schema.ErrorFilesSet
     actions {
       action reTriggerFile()
