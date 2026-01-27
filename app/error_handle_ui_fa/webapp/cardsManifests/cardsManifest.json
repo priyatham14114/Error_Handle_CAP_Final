@@ -420,7 +420,7 @@
                             "type": "Navigation",
                             "url": "",
                             "parameters": {
-                                "ID":"{ID}",
+                                "ID": "{ID}",
                                 "iFlow_name": "{iFlow_name}",
                                 "createdAt": "{createdAt}",
                                 "Status": "{Status}",
@@ -437,6 +437,7 @@
     },
     "LineChart": {
         "sap.app": {
+            "id": "Id_by_Status",
             "type": "card"
         },
         "sap.card": {
