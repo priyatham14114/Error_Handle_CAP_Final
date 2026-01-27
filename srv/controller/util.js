@@ -87,9 +87,7 @@ const onReTriggerIflow = async (req) => {
             return req.info(409, `Reprocessing already in progress by user ${existing.modifiedBy}`);
         }
 
-        const destination = await getDestination({
-            destinationName: "CPI_Destination"
-        });
+        const destination = await getDestination({ destinationName: "CPI_Destination" });
 
         if (!destination) {
             throw new Error("Could not reach CPI destination");
@@ -133,7 +131,7 @@ const onReTriggerIflow = async (req) => {
                 .where({ ID: selectedID })
         );
         await tx3.commit();
-        req.reject(500, `Reprocess failed please check the updated error details`);
+        req.reject(500, `Reprocess failed please check the updated error details \n ${error.message}`);
         return { Status: 500, message: error.message, }
     }
 };
@@ -466,9 +464,9 @@ const onReadCountForDonutLogs = async (req) => {
     // Build the returned array 
     return [
         // ErrorLogSet KPIs
-        { IDentifier: 'TotalNoretries', Value: logResult?.noretries || 0 },
-        { IDentifier: 'TotalFailedErrors', Value: logResult?.failed || 0 },
-        { IDentifier: 'TotalSuccessErrors', Value: logResult?.success || 0 }
+        { Identifier: 'TotalNoretries', Value: logResult?.noretries || 0 },
+        { Identifier: 'TotalFailedErrors', Value: logResult?.failed || 0 },
+        { Identifier: 'TotalSuccessErrors', Value: logResult?.success || 0 }
     ];
 }
 
@@ -501,9 +499,9 @@ const onReadCountForDonutFiles = async (req) => {
     return [
 
         // ErrorFilesSet KPIs
-        { IDentifier: 'TotalNoretries', Value: fileResult?.noretries || 0 },
-        { IDentifier: 'TotalFailedErrors', Value: fileResult?.failed || 0 },
-        { IDentifier: 'TotalSuccessErrors', Value: fileResult?.success || 0 }
+        { Identifier: 'TotalNoretries', Value: fileResult?.noretries || 0 },
+        { Identifier: 'TotalFailedErrors', Value: fileResult?.failed || 0 },
+        { Identifier: 'TotalSuccessErrors', Value: fileResult?.success || 0 }
 
     ];
 };

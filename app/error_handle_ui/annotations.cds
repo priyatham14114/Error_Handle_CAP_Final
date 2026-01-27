@@ -154,16 +154,16 @@ annotate service.ErrorLogSet with @(
             Label : 'User Information',
             Target: '@UI.FieldGroup#GeneratedGroup2'
         },
-        {
-            $Type : 'UI.CollectionFacet',
-            ID    : 'GeneratedFacet3',
-            Label : 'Error Details',
-            Facets: [{
-                $Type : 'UI.ReferenceFacet',
-                Target: '@UI.LineItem',
-                Label : 'Table'
-            }]
-        }
+        // {
+        //     $Type : 'UI.CollectionFacet',
+        //     ID    : 'GeneratedFacet3',
+        //     Label : 'Error Details',
+        //     Facets: [{
+        //         $Type : 'UI.ReferenceFacet',
+        //         Target: '@UI.LineItem',
+        //         Label : 'Table'
+        //     }]
+        // }
     ],
 
 
