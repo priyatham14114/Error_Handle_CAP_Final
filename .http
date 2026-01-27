@@ -68,7 +68,7 @@ Content-Type: application/json
   "Error_Code": "500",
   "CorrelationID": "b3f6c1e0-9d5a-4f25-97d7-6e7c7d5ef6a2",
   "Receiver_System": "BlueYonder",
-  "iFlow_name": "PP_HANA",
+  "iFlow_name": "S4 to HANA 3PL",
   "ReqHeaders":{"Sender_ProcessDirect":"/Inbound/STO/Sftp_Send","mimeType":"text/csv","MM_Name":"MM_STO","receiverAgency":"S4HPC","senderAgency":"BlueYonder","CompanyCode":"1163"}
 
 }
@@ -139,9 +139,9 @@ Content-Type: application/json
   "Error_Msg": "com.sap.xi.mapping.camel.XiMappingException: Cannot produce target element /PurchaseOrderData/Material. Queue has not enough values in context. Target xsd requires a value for this element, but target field mapping does not produce one. Probably the xml-instance is not valid to the source xsd, or the target field mapping does not fulfill the requirement of the target xsd.",
   "Msg_ID": "AGi5aM2u_ZquCnkpe1LjDlrjDmdQ",
   "CorrelationID": "AGi5aM1i0Dq5f507ANZnNEpQXmuC",
-  "iFlow_name": "Test",
+  "iFlow_name": "S4HANA TO BLACK SMITH",
   "Receiver_System":"Blueyonder",
-  "Department":"Dept1"
+  "Department":"Dept2"
 
 }
 
