@@ -144,6 +144,18 @@ Content-Type: application/json
   "Department":"Dept2"
 
 }
+###### check with xml as a string
+POST http://localhost:4004/odata/v4/catalog/ErrorLogSet HTTP/1.1
+Content-Type: application/json
+
+{
+"Source_payload":"<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<ns:EmployeeRequest xmlns:ns=\"http://example.com/employee\">\n  <ns:Employee>\n    <ns:EmployeeID>12345</ns:EmployeeID>\n    <ns:FirstName>Priyatham</ns:FirstName>\n    <ns:LastName>Subhash</ns:LastName>\n    <ns:Department>SAP</ns:Department>\n  </ns:Employee>\n</ns:EmployeeRequest>",
+"Error_Code":"HTTP operation failed invoking https://mrmawsus10-mrm-mrm-byod-market-data-upload.cfapps.us10.hana.ondemand.com/uploadMarketData1 with statusCode: 404",
+"Error_Msg" : "HTTP operation failed invoking https://mrmawsus10-mrm-mrm-byod-market-data-upload.cfapps.us10.hana.ondemand.com/uploadMarketData1 with statusCode: 404",
+"Msg_ID":"AGmAvV0aw34MjSTJoN50xqWyL5oC",
+"CorrelationID":"AGmAvVQMFedRIvBC6OD6LwPukKTJ",
+"iFlow_name":"MRM_BringYourOwnRates_FromBloomberg_RTR_Prc"
+}
 
 ####
 PUT http://localhost:4004/odata/v4/catalog/ErrorLogSet('064d2552-c7fd-40ef-9b50-561f4f526f76') HTTP/1.1
