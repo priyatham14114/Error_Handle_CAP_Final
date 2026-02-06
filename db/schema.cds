@@ -54,7 +54,7 @@ entity ErrorLogSet : cuid, managed {
   @UI.lineItem.position: 80
   Status             : String;
 
-  @UI.Hidden : true
+  @UI.Hidden           : true
   StatusCriticality  : Integer @cds.persistence.exists: false;
 
   @title: 'Receiver System'
@@ -71,6 +71,9 @@ entity ErrorLogSet : cuid, managed {
 
   @title: 'Process Direct Name'
   ProcessDirectName  : String;
+
+  // ReqHeaders         : String;
+
 
 }
 
@@ -123,6 +126,6 @@ entity ErrorFilesSet : cuid, managed {
   @title: 'Department'
   Department               : String;
 
-  ReqHeaders : String;
+  ReqHeaders               : String;
 
 }

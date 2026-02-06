@@ -92,13 +92,13 @@ const onReTriggerIflow = async (req) => {
         if (!destination) {
             throw new Error("Could not reach CPI destination");
         }
-
+        console.log("PAYLOAD__\n" + record.Source_payload)
         const response = await executeHttpRequest(destination, {
             method: "POST",
             url: "/http/s4payload",
             data: record.Source_payload,
             headers: {
-                "Content-Type": "application/json",
+                "Content-Type": "application/xml",  // Should be dynamic based on kind of data sending
                 "Sender": "CAP",
                 "CAP_ID": selectedID,
                 "TransactionType": "Reprocess"
@@ -236,11 +236,11 @@ const onSendFileToCPI = async (req) => {
             await tx2.commit();
 
             req.notify("Integration Flow triggered successfully.");
-            req.info(200, `Message processing completed See response text below \n Response: HIDden`);
+            req.info(200, `Message processing completed See response text below \n Response: Hidden`);
             return {
                 message: "File reprocessing triggered successfully",
                 httpStatus: response.status,
-                responseData: 'HIDden'
+                responseData: 'Hidden'
             };
         }
 
@@ -338,7 +338,7 @@ const onSendFileToCPI = async (req) => {
 //         if (response && response.status === 200) {
 //             await UPDATE("ErrorFilesSet").set({ Status: "Success" }).where({ ID: selectedID });
 //             req.notify("Integration flow triggered successfully. See response.");
-//             req.info(`Status: ${response.status} \nResponse data hIDden due to size.`);
+//             req.info(`Status: ${response.status} \nResponse data Hidden due to size.`);
 //             return {
 //                 message: 'Integration flow triggered successfully',
 //                 httpStatus: response.status,
@@ -420,7 +420,7 @@ const onSendFileToCPI = async (req) => {
 //         if (response && allowedCodes.includes(response.status)) {
 //             await UPDATE("ErrorFilesSet").set({ Status: "Success" }).where({ ID: selectedID });
 //             req.notify("Integration flow triggerd successfully See response")
-//             req.info(`Status:${JSON.stringify(response.status)} \n ResponseData: Response data hIDden because it may contain large text`)
+//             req.info(`Status:${JSON.stringify(response.status)} \n ResponseData: Response data Hidden because it may contain large text`)
 //             return {
 //                 message: 'Integration flow triggered successfully',
 //                 httpStatus: response.status,
