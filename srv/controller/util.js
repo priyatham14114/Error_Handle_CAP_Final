@@ -3,6 +3,7 @@ const { getDestination } = require('@sap-cloud-sdk/connectivity'); // an import 
 const { XMLParser, XMLBuilder, XMLValIDator } = require('fast-xml-parser');  // to convert the json to xml
 const { Readable } = require('stream'); // to check the file format is stream or string (base64)
 const { checkUserRoles, checkUserRolesKPIs } = require("../controller/auth.js");
+// const { sendLogToDD } = require("../controller/dataDog.js");
 
 
 // before handler for creation of flat payload ErrorLogSet
@@ -89,6 +90,8 @@ const onReTriggerIflow = async (req) => {
 
         const destination = await getDestination({ destinationName: "CPI_Destination" });
 
+        console.log("APIKEY___" + destination.originalProperties.destinationConfiguration.APIKEY)
+
         if (!destination) {
             throw new Error("Could not reach CPI destination");
         }
@@ -116,6 +119,10 @@ const onReTriggerIflow = async (req) => {
             await tx2.commit();
             req.notify("Integration Flow triggered successfully");
             req.info(200, `Message processing completed See response text below \n Response: ${response.data}`);
+            //    TEST
+            // const ddResp = await sendLogToDD(req, response.status)
+            // console.log("ddResp__ " + ddResp)
+            // test
             return {
                 message: "IFlow executed successfully",
                 httpStatus: response.status,
@@ -131,6 +138,10 @@ const onReTriggerIflow = async (req) => {
                 .where({ ID: selectedID })
         );
         await tx3.commit();
+        //    TEST
+        // const ddResp = await sendLogToDD(req, "Failed")
+        // console.log("ddResp__ " + ddResp)
+        // test
         req.reject(500, `Reprocess failed please check the updated error details \n ${error.message}`);
         return { Status: 500, message: error.message, }
     }
