@@ -49,7 +49,6 @@ const onBeforeErrorFilesSetCreate = async (req) => {
 
 // on handler for triggering the integration flow with payload passing case CURRENTLY JSON ONLY
 const onReTriggerIflow = async (req) => {
-
     const selectedID = req.params[0].ID;
 
     try {
@@ -90,7 +89,7 @@ const onReTriggerIflow = async (req) => {
 
         const destination = await getDestination({ destinationName: "CPI_Destination" });
 
-        console.log("APIKEY___" + destination.originalProperties.destinationConfiguration.APIKEY)
+        // console.log("APIKEY___" + destination.originalProperties.destinationConfiguration.APIKEY)
 
         if (!destination) {
             throw new Error("Could not reach CPI destination");
@@ -101,7 +100,7 @@ const onReTriggerIflow = async (req) => {
             url: "/http/s4payload",
             data: record.Source_payload,
             headers: {
-                "Content-Type": "application/xml",  // Should be dynamic based on kind of data sending
+                "Content-Type": "application/json",  // Should be dynamic based on kind of data sending
                 "Sender": "CAP",
                 "CAP_ID": selectedID,
                 "TransactionType": "Reprocess"
