@@ -187,7 +187,19 @@
           "options": {
             "settings": {
               "editableHeaderContent": false,
-              "contextPath": "/ErrorLogSet"
+              "contextPath": "/ErrorLogSet",
+              "controlConfiguration": {
+                "LogReprocessHistory/@com.sap.vocabularies.UI.v1.LineItem": {
+                  "tableSettings": {
+                    "enableFullScreen": true,
+                    "rowCount": 10,
+                    "disableCopyToClipboard": false,
+                    "enablePaste": true,
+                    "selectAll": true,
+                    "selectionMode": "Single"
+                  }
+                }
+              }
             }
           },
           "controlAggregation": "midColumnPages",

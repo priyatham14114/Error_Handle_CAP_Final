@@ -2,11 +2,32 @@ using CatalogService as service from '../../srv/errorlog-service';
 
 
 annotate service.ErrorLogSet with {
+
+    @Consumption.filter: {
+        selectionType     : #INTERVAL,
+        multipleSelections: false
+    }
     createdAt  @UI.HiddenFilter: false;
     createdBy  @UI.HiddenFilter: false;
     modifiedAt @UI.HiddenFilter: false;
     modifiedBy @UI.HiddenFilter: false;
 };
+
+annotate service.ReproxLogHistory with @(
+    UI.LineItem: [
+        {
+            $Type: 'UI.DataField',
+            Label: 'Reprocessed By',
+            Value: ReprocessedBy
+        },
+        {
+            $Type: 'UI.DataField',
+            Label: 'Reprocessed At',
+            Value: createdAt
+        }
+    ],
+    
+);
 
 annotate service.ErrorLogSet with @(
 
@@ -154,26 +175,28 @@ annotate service.ErrorLogSet with @(
             Label : 'User Information',
             Target: '@UI.FieldGroup#GeneratedGroup2'
         },
-        // {
-        //     $Type : 'UI.CollectionFacet',
-        //     ID    : 'GeneratedFacet3',
-        //     Label : 'Error Details',
-        //     Facets: [{
-        //         $Type : 'UI.ReferenceFacet',
-        //         Target: '@UI.LineItem',
-        //         Label : 'Table'
-        //     }]
-        // }
+        // TEST
+        {
+            $Type : 'UI.CollectionFacet',
+            ID    : 'GeneratedFacet3',
+            Label : 'Reprocess History',
+            Facets: [{
+                $Type : 'UI.ReferenceFacet',
+                Target: 'LogReprocessHistory/@UI.LineItem'
+            }]
+        }
+    // TEST
+
     ],
 
 
 );
 
 
-annotate service.ErrorLogSet @(Common.SideEffects #reTrigger: {
-    SourceEntities  : ['ErrorLogSet'],
-    TargetProperties: ['*']
-});
+// annotate service.ErrorLogSet @(Common.SideEffects #reTrigger: {
+//     SourceEntities  : ['ErrorLogSet'],
+//     TargetProperties: ['*']
+// });
 
 // test
 // annotate service.ErrorLogSet with @(

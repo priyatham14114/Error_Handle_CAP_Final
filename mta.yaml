@@ -38,6 +38,10 @@
         build-result: resources
         requires:
           - artifacts:
+              - comapphypercaredash.zip
+            name: comapphypercaredash
+            target-path: resources/
+          - artifacts:
               - comapperrorhandleui.zip
             name: comapperrorhandleui
             target-path: resources/
@@ -49,6 +53,18 @@
               - comapperrorhandleuifilesui.zip
             name: comapperrorhandleuifilesui
             target-path: resources/
+    - name: comapphypercaredash
+      type: html5
+      path: app/hypercaredash
+      parameters:
+        public: true
+      build-parameters:
+        build-result: dist
+        builder: custom
+        commands:
+          - npm install
+          - npm run build:cf
+        supported-platforms: []
     - name: comapperrorhandleui
       type: html5
       path: app/error_handle_ui

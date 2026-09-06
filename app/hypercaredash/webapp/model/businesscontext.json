@@ -1,0 +1,5 @@
+{
+    "Order_Create": "Create Sales Order from s4 to Hybris to 3PL to Customer to Delivery to Invoice",
+    "Delivery_Update": "Update Delivery",
+    "Invoice_Post": "Post Customer Invoice"
+}

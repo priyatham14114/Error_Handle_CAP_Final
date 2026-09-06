@@ -23,59 +23,67 @@ entity ErrorLogSet : cuid, managed {
   @UI.editable         : true
   @title               : 'Source Payload'
   @UI.lineItem.position: 10
-  Source_payload     : LargeString;
+  Source_payload      : LargeString;
 
   @title               : 'Status Code'
   @UI.lineItem.position: 20
-  Error_Code         : String;
+  Error_Code          : String;
 
   @title               : 'Error Message'
   @UI.lineItem.position: 30
   @UI.multiLineText
-  Error_Msg          : LargeString;
+  Error_Msg           : LargeString;
 
   @title               : 'Message ID'
   @UI.lineItem.position: 40
-  Msg_ID             : String;
+  Msg_ID              : String;
 
   @title               : 'Correlation ID'
   @UI.lineItem.position: 50
-  CorrelationID      : String;
+  CorrelationID       : String;
 
   @title               : 'Integration Flow'
   @UI.lineItem.position: 60
-  iFlow_name         : String;
+  iFlow_name          : String;
 
   @title               : 'Retry count'
   @UI.lineItem.position: 70
-  NumberOfRetriggers : Integer;
+  NumberOfRetriggers  : Integer;
 
   @title               : 'Status'
   @UI.lineItem.position: 80
-  Status             : String;
+  Status              : String;
 
   @UI.Hidden           : true
-  StatusCriticality  : Integer @cds.persistence.exists: false;
+  StatusCriticality   : Integer @cds.persistence.exists: false;
 
   @title: 'Receiver System'
-  Receiver_System    : String;
+  Receiver_System     : String;
 
   @title: 'Type of Error'
-  error_Type         : String;
+  error_Type          : String;
 
   @title: 'Operation Type'
-  operation_Type     : String;
+  operation_Type      : String;
 
   @title: 'Department'
-  Department         : String;
+  Department          : String;
 
   @title: 'Process Direct Name'
-  ProcessDirectName  : String;
+  ProcessDirectName   : String;
 
   // ReqHeaders         : String;
-
+  LogReprocessHistory : Composition of many ReproxLogHistory
+                          on LogReprocessHistory.parent = $self;
 
 }
+
+entity ReproxLogHistory : cuid, managed {
+  parent        : Association to ErrorLogSet;
+  ReprocessedBy : String;
+  UserId        : String;
+}
+
 
 entity ErrorFilesSet : cuid, managed {
 
@@ -128,4 +136,13 @@ entity ErrorFilesSet : cuid, managed {
 
   ReqHeaders               : String;
 
+  FileReprocessHistory     : Composition of many ReproxFileReprocessHistory
+                               on FileReprocessHistory.parent = $self;
+}
+
+
+entity ReproxFileReprocessHistory : cuid, managed {
+  parent        : Association to ErrorFilesSet;
+  ReprocessedBy : String;
+  UserId        : String;
 }

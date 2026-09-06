@@ -3,6 +3,9 @@ const { getDestination } = require('@sap-cloud-sdk/connectivity'); // an import 
 const { XMLParser, XMLBuilder, XMLValIDator } = require('fast-xml-parser');  // to convert the json to xml
 const { Readable } = require('stream'); // to check the file format is stream or string (base64)
 const { checkUserRoles, checkUserRolesKPIs } = require("../controller/auth.js");
+const { mergeCsvFiles } = require("../controller/merge.js");
+// const { console } = require('inspector');
+
 // const { sendLogToDD } = require("../controller/dataDog.js");
 
 
@@ -49,11 +52,18 @@ const onBeforeErrorFilesSetCreate = async (req) => {
 
 // on handler for triggering the integration flow with payload passing case CURRENTLY JSON ONLY
 const onReTriggerIflow = async (req) => {
-    const selectedID = req.params[0].ID;
+
+    console.log("auto reprox triggered")
+
+    const { ErrorLogSet, ReproxLogHistory } = cds.entities("CPI_errordetails_schema");
+
+    const selectedID = req.params?.[0]?.ID ?? req.data?.ID;
 
     try {
 
-        const record = await SELECT.one.from("ErrorLogSet")
+        // await req.service.schedule("autoReProx",{ID:selectedID}).after('2min').as(`auto process - ${selectedID}`)
+
+        const record = await SELECT.one.from(ErrorLogSet)
             .columns(['ID', 'Source_payload', 'Status', 'NumberOfRetriggers'])
             .where({ ID: selectedID });
 
@@ -68,7 +78,7 @@ const onReTriggerIflow = async (req) => {
         const tx = cds.tx();
 
         const updated = await tx.run(
-            UPDATE("ErrorLogSet").set({
+            UPDATE(ErrorLogSet).set({
                 Status: "Reprocessing",
                 NumberOfRetriggers: { '+=': 1 }
             }).where({
@@ -76,16 +86,27 @@ const onReTriggerIflow = async (req) => {
                 Status: { '!=': "Reprocessing" }
             })
         );
-
         await tx.commit();
 
         if (updated === 0) {
-            const existing = await SELECT.one.from("ErrorLogSet")
+            const existing = await SELECT.one.from(ErrorLogSet)
                 .columns(['modifiedBy'])
                 .where({ ID: selectedID });
 
             return req.info(409, `Reprocessing already in progress by user ${existing.modifiedBy}`);
         }
+
+        // test
+        const tx_l = cds.tx();
+
+        await tx_l.run(INSERT.into(ReproxLogHistory).entries({
+            parent_ID: selectedID,
+            ReprocessedBy: req.user.id,
+            UserId: req.user.id
+        }))
+        await tx_l.commit();
+
+        // test
 
         const destination = await getDestination({ destinationName: "CPI_Destination" });
 
@@ -111,7 +132,7 @@ const onReTriggerIflow = async (req) => {
         if (response && allowedCodes.includes(response.status)) {
             const tx2 = cds.tx();
             await tx2.run(
-                UPDATE("ErrorLogSet")
+                UPDATE(ErrorLogSet)
                     .set({ Status: "Success" })
                     .where({ ID: selectedID })
             );
@@ -132,7 +153,7 @@ const onReTriggerIflow = async (req) => {
         console.error("Reprocess Error:", error);
         const tx3 = cds.tx();
         await tx3.run(
-            UPDATE("ErrorLogSet")
+            UPDATE(ErrorLogSet)
                 .set({ Status: "Failed" })
                 .where({ ID: selectedID })
         );
@@ -760,9 +781,11 @@ const onGetFilesErrorSummaryByFlow = async (req) => {
 
 const onUpdateErrorLogSet = async (req) => {
     try {
+        const { ErrorLogSet, ErrorFilesSet } = cds.entities('CPI_errordetails_schema');
+
         const { ID } = req.data;
         const result = await cds.tx(req).run(
-            UPDATE("ErrorLogSet").set(req.data).where({ ID })
+            UPDATE(ErrorLogSet).set(req.data).where({ ID })
         );
         if (!result || result === 0) {
             req.error(404, `Record with ID ${ID} not found`);
@@ -778,8 +801,9 @@ const onUpdateErrorLogSet = async (req) => {
 
 const onUpdateErrorFilesSet = async (req) => {
     try {
+        const { ErrorFilesSet } = cds.entities('CPI_errordetails_schema');
         let response = await cds.tx(req).run(
-            UPDATE("ErrorFilesSet").set(req.data).where({ ID: req.data.ID })
+            UPDATE(ErrorFilesSet).set(req.data).where({ ID: req.data.ID })
         );
         if (!response) {
             return req.res.status(404).json({
@@ -802,9 +826,234 @@ const onUpdateErrorFilesSet = async (req) => {
     }
 };
 
+// const onGetIFlowKPI = async (req) => {
+
+//     const roles = await checkUserRolesKPIs(req);
+//     if (!roles) {
+//         req.reject(403, 'Unauthorized');
+//         return;
+//     }
+
+//     let whereClause = {};
+
+//     if (!roles.includes('EHAdmin')) {
+//         whereClause = { Department: { in: roles } };
+//     }
+
+//     const cutoff = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString();
+
+//     const result = await cds.run(
+//         SELECT.from('ErrorLogSet')
+//             .columns([
+//                 'iFlow_name',
+//                 { xpr: ["sum(case when Status = 'Failed' then 1 else 0 end)"], as: 'Failed' },
+//                 { xpr: ["sum(case when Status = 'Success' then 1 else 0 end)"], as: 'Success' },
+//                 { xpr: ["count(*)"], as: 'Total' }
+//             ])
+//             .where({
+//                 ...whereClause,
+//                 createdAt: { '>=': cutoff }
+//             })
+//             .groupBy('iFlow_name')
+//     );
+
+//     return result.map(record => {
+//         const total = Number(record.Total || 0);
+//         const success = Number(record.Success || 0);
+//         const failed = Number(record.Failed || 0);
+//         const percentMatch = total === 0 ? 0 : Number(((success * 100) / total).toFixed(2));
+
+//         return {
+//             ...record,
+//             Total: total || 0,
+//             Success: success || 0,
+//             Failed: failed || 0,
+//             Variance: total - success,
+//             PercentMatch: percentMatch,
+//             FlowStatus:
+//                 percentMatch > 90 ? 'Safe' :
+//                     percentMatch >= 70 ? 'Action Required' :
+//                         'At Risk'
+//         };
+//     });
+// }
+
+const onGetIFlowKPI = async (req) => {
+    const { ErrorLogSet, ErrorFilesSet } = cds.entities('CPI_errordetails_schema');
+    const { fromDate, toDate } = req.data;
+
+    console.log(req.data);
+
+    const { startISO, endISO } = normalizeDateRange(fromDate, toDate);
+    function normalizeDateRange(fromDate, toDate) {
+        if (!fromDate) throw new Error('fromDate is required');
+
+        const from = new Date(fromDate);
+        const to = new Date(toDate || fromDate);
+
+        const startISO = new Date(Date.UTC(
+            from.getUTCFullYear(),
+            from.getUTCMonth(),
+            from.getUTCDate(),
+            0, 0, 0, 0
+        )).toISOString();
+
+        const endISO = new Date(Date.UTC(
+            to.getUTCFullYear(),
+            to.getUTCMonth(),
+            to.getUTCDate(),
+            23, 59, 59, 999
+        )).toISOString();
+
+        return { startISO, endISO };
+    }
+    if (!fromDate || !toDate) req.reject(400, 'fromDate and toDate are required');
+
+    const from = new Date(fromDate);
+    const to = new Date(toDate);
+
+    const tx = cds.tx(req);
+
+    const logRows = await tx.run(
+        SELECT.from(ErrorLogSet)
+            .columns('ID', 'iFlow_name', 'Department', 'Status', 'createdAt')
+            .where`
+    createdAt >= ${startISO}
+    and createdAt <= ${endISO}
+`
+    );
+
+    const fileRows = await tx.run(
+        SELECT.from(ErrorFilesSet)
+            .columns('ID', 'iFlow_name', 'Department', 'Status', 'createdAt')
+            .where`
+    createdAt >= ${startISO}
+    and createdAt <= ${endISO}
+`
+    );
+
+    const mergedRows = [
+        ...logRows.map(r => ({ ...r, SourceType: 'LOG' })),
+        ...fileRows.map(r => ({ ...r, SourceType: 'FILE' }))
+    ];
+
+    const grouped = new Map();
+
+    for (const r of mergedRows) {
+        const key = `${r.iFlow_name}__${r.SourceType}`;
+        if (!grouped.has(key)) {
+            grouped.set(key, {
+                iFlow_name: r.iFlow_name,
+                SourceType: r.SourceType,
+                TotalRecords: 0,
+                Successcount: 0,
+                Failed: 0,
+                allmsgs: []
+            });
+        }
+
+        const g = grouped.get(key);
+        g.TotalRecords += 1;
+        if (r.Status === 'Success') g.Successcount += 1;
+        if (r.Status === 'Failed') g.Failed += 1;
+
+        g.allmsgs.push({
+            ID: r.ID,
+            createdAt: r.createdAt,
+            Status: r.Status,
+            Department: r.Department
+        });
+    }
+
+    const result = [...grouped.values()].map(g => {
+        const Variance = g.TotalRecords - g.Successcount;
+        const PercentMatch = g.TotalRecords === 0 ? 0 : Number(((g.Successcount * 100) / g.TotalRecords).toFixed(2));
+        const FlowStatus = PercentMatch > 90 ? 'Safe' : PercentMatch >= 70 ? 'Action Required' : 'At Risk';
+
+        return {
+            ...g,
+            Variance,
+            PercentMatch,
+            FlowStatus
+        };
+    });
+
+    return result;
+};
+
+const onDownloadMergedErrorDetails = async (req) => {
+
+    // const { fileIds } = req.data;
+    const { ErrorFilesSet } = cds.entities("CPI_errordetails_schema");
+
+    try {
+
+        const ids = req.data.fileIds;
+
+        if (!ids || ids.length === 0) {
+            return req.error(400, "No records selected.");
+        }
+
+        const files = await SELECT
+            .from(ErrorFilesSet)
+            .columns(
+                "ID",
+                "ErrorDetailsFile"
+            )
+            .where({
+                ID: {
+                    in: ids
+                }
+            });
+
+        const mergedBuffer = await mergeCsvFiles(files);
+
+        // console.log("LOgged here" + mergedBuffer.toString("utf8"));
+
+        return mergedBuffer;
+
+    } catch (e) {
+
+        console.error(e);
+
+        req.error(500, e.message);
+
+    }
+}
 
 
+// test
+const onAfterErrorLogSetCreate = async (srv, data, req) => {
+    try {
+        if (!data?.ID) {
+            console.error(
+                '[ErrorLogSet] CREATE after-handler: Missing ID'
+            );
+            return;
+        }
 
+        // Do not schedule successful records
+        if (data.Status === 'Success') {
+            console.log(`[ErrorLogSet] Skipping auto reprocess for successful ID=${data.ID}`);
+            return;
+        }
+        const jobName = `auto-retrigger-${data.ID}`;
+        // Schedule reprocessing after 2 minutes
+        await srv.schedule('reTrigger', { ID: data.ID })
+            .after('2min')
+
+        console.log(
+            `[ErrorLogSet] Auto reprocess scheduled successfully. ` +
+            `ID=${data.ID}, delay=2min`
+        );
+
+    } catch (error) {
+        console.error(`[ErrorLogSet] Failed to schedule auto reprocess. ` + `ID=${data?.ID ?? 'unknown'}, error=${error.message}`
+        );
+    }
+};
+
+// test
 
 // EXPORTING FUNCTIONS 
 module.exports = {
@@ -824,5 +1073,8 @@ module.exports = {
     onGetErrorSummaryByFlow,
     onGetFilesErrorSummaryByFlow,
     onUpdateErrorLogSet,
-    onUpdateErrorFilesSet
+    onUpdateErrorFilesSet,
+    onGetIFlowKPI,
+    onDownloadMergedErrorDetails,
+    onAfterErrorLogSetCreate
 };

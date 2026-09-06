@@ -16,7 +16,11 @@ const { onBeforeErrorLogSetCreate,
   onGetErrorSummaryByFlow,
   onGetFilesErrorSummaryByFlow,
   onUpdateErrorLogSet,
-  onUpdateErrorFilesSet
+  onUpdateErrorFilesSet,
+  onGetIFlowKPI,
+  onDownloadMergedErrorDetails,
+  // onAutoReProx,
+  onAfterErrorLogSetCreate
 } = require("./controller/util.js");
 
 
@@ -27,10 +31,19 @@ module.exports = cds.service.impl(async function (srv) {
 
   srv.before(["CREATE"], "ErrorLogSet", onBeforeErrorLogSetCreate)   // BEFORE HANDLER FOR OPERATIONS BEFORE CREATION OF ErrorLogSet
   srv.before(["CREATE"], "ErrorFilesSet", onBeforeErrorFilesSetCreate) // BEFORE HANDLER FOR OPERATIONS BEFORE CREATION OF ErrorFilesSet
-  srv.on(["reTrigger"], "ErrorLogSet", onReTriggerIflow) // ON HANDLER FOR TRIGGER IFLOW WITH PAYLOAD
+
+  // srv.after(["CREATE"], "ErrorLogSet", onAfterErrorLogSetCreate) // BEFORE HANDLER FOR OPERATIONS BEFORE CREATION OF ErrorFilesSet
+
+    srv.after('CREATE', 'ErrorLogSet', async (data, req) => {
+        await onAfterErrorLogSetCreate(srv, data, req);
+    });
+
+  srv.on(["reTrigger"], onReTriggerIflow) // ON HANDLER FOR TRIGGER IFLOW WITH PAYLOAD
   srv.on(["reTriggerFile"], onSendFileToCPI) // ON HANDLER FOR RE-TRIGGER FILE
   srv.on("UPDATE", "ErrorLogSet", onUpdateErrorLogSet);
   srv.on("UPDATE", "ErrorFilesSet", onUpdateErrorFilesSet);
+  srv.on("downloadMergedErrorDetails", onDownloadMergedErrorDetails);
+  // srv.on("autoReProx", onAutoReProx);
 
 
   // All Overview poage KPIs
@@ -44,6 +57,7 @@ module.exports = cds.service.impl(async function (srv) {
   srv.on('getErrorSummaryByFlow', onGetErrorSummaryByFlow);
   srv.on('getFilesDailyErrorCounts', onGetFilesDailyErrorCounts);
   srv.on('getFilesErrorSummaryByFlow', onGetFilesErrorSummaryByFlow);
+  srv.on('getIFlowKPI', onGetIFlowKPI);
 
   srv.on('getAppConfig', async (req) => {
     try {
@@ -55,12 +69,18 @@ module.exports = cds.service.impl(async function (srv) {
     }
   });
 
-  srv.after('READ', ['ErrorLogSet', 'ErrorFilesSet'], (each) => {
+  srv.after('READ', ['ErrorLogSet', 'ErrorFilesSet'], async(each) => {
     each.StatusCriticality =
       each.Status === 'Success' ? 3 :
         each.Status === 'Failed' ? 1 :
           each.Status === 'No retries yet' ? 2 : 
           each.Status === 'Reprocessing' ? 0 : 0;
+// // test
+//         await srv.schedule("autoReProx").after('2min')
+//         console.log("auto reprocess triggered.......... wait 2 min")
+
+// // test
+
   });
 
 

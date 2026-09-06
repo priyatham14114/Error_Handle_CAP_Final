@@ -23,12 +23,33 @@ MIMEType:text/csv
 #  < ./files/samplexml.xml
 # < ./files/test_sample.pdf
 ### Upload
-PUT http://localhost:4004/odata/v4/catalog/ErrorFilesSet('1634915e-8da3-44dc-be09-2ba06d790c95')/ErrorDetailsFile/$value
+PUT http://localhost:4004/odata/v4/catalog/ErrorFilesSet('0f6093f9-e1ae-4d7a-bc10-9cf02dbfc726')/ErrorDetailsFile/$value
 Content-Type: text/csv
-PayloadFileName: samplexml.csv
+PayloadFileName: file3.csv
 MIMEType:text/csv
 
- < ./files/samplexml.csv
+Status|DeliveryNumber|Order_Line|Batch|Material|Pallet|QTY|Validation_message|TestField
+Success|80087124|20|BM26075L62|10317250|1.06027E+17|20|test
+Success|80087124|30|BN26104L4|10317851|1.06027E+17|20|test
+Success|80087124|130|CS26077L4|10317282|1.06027E+17|39|test
+Success|80087124|110|CS26110L7|10317284|1.06027E+17|26|test
+Success|80087124|150|PC26107B2|10317285|1.06027E+17|26|test
+Success|80087124|10|BM26112L62|10318533|1.06027E+17|10|test
+Success|80087124|40|BC26139A2|10326961|1.06027E+17|10|
+Success|80087124|140|PC26035C2|10318531|1.06027E+17|13|test
+Success|80087124|120|PC26104B2|10317286|1.06027E+17|30|
+Success|80087124|120|PC26099A2|10317286|1.06027E+17|9|test
+Success|80087124|100|PC26102C2|10325944|1.06027E+17|39|
+Success|80087124|180|BC26106A2|10326026|1.06027E+17|10|
+Success|80087124|50|BM2616761|10341935|1.06027E+17|54|
+Failed|80087124|160|TD26027L141|10367069|1.06027E+17|19|Row 14: Material or Batch or StorageLocation 'SALE'/'AGED' is not available in S4 with the combination
+Success|80087124|170|629DA4CC9|10327970|1.06027E+17|38|
+Success|80087124|190|BC26105A2|10367461|1.06027E+17|25|
+Success|80087124|60|BK26175A2|10367406|1.06027E+17|54|
+Success|80087124|80|BK26167B2|10367397|1.06027E+17|54|
+Success|80087124|90|BM2617261|10367380|1.06027E+17|54|
+Success|80087124|200|CS26167L4|10367670|1.06027E+17|26|
+Success|80087124|210|CS26174L7|10367671|1.06027E+17|26|
 
 
 #  < ./files/samplexml.xml
@@ -68,7 +89,8 @@ Content-Type: application/json
   "Error_Code": "500",
   "CorrelationID": "b3f6c1e0-9d5a-4f25-97d7-6e7c7d5ef6a2",
   "Receiver_System": "BlueYonder",
-  "iFlow_name": "S4 to HANA 3PL",
+  "iFlow_name": "Invoice_Post",
+  "Status":"Failed",
   "ReqHeaders":{"Sender_ProcessDirect":"/Inbound/STO/Sftp_Send","mimeType":"text/csv","MM_Name":"MM_STO","receiverAgency":"S4HPC","senderAgency":"BlueYonder","CompanyCode":"1163"}
 
 }
@@ -124,8 +146,9 @@ Content-Type: application/json
   "Error_Msg": "com.sap.xi.mapping.camel.XiMappingException: Cannot produce target element /PurchaseOrderData/Material. Queue has not enough values in context. Target xsd requires a value for this element, but target field mapping does not produce one. Probably the xml-instance is not valid to the source xsd, or the target field mapping does not fulfill the requirement of the target xsd.",
   "Msg_ID": "AGi5aM2u_ZquCnkpe1LjDlrjDmdQ",
   "CorrelationID": "AGi5aM1i0Dq5f507ANZnNEpQXmuC",
-  "iFlow_name": "s4_to_ATEST14",
-  "Receiver_System":"Blueyonder"
+  "iFlow_name": "Invoice_Post",
+  "Receiver_System":"Blueyonder",
+  "Status":"Failed"
 }
 
 # XML TEST
@@ -154,11 +177,12 @@ Content-Type: application/json
 "Error_Msg" : "HTTP operation failed invoking https://mrmawsus10-mrm-mrm-byod-market-data-upload.cfapps.us10.hana.ondemand.com/uploadMarketData1 with statusCode: 404",
 "Msg_ID":"AGmAvV0aw34MjSTJoN50xqWyL5oC",
 "CorrelationID":"AGmAvVQMFedRIvBC6OD6LwPukKTJ",
-"iFlow_name":"MRM_BringYourOwnRates_FromBloomberg_RTR_Prc"
+"iFlow_name":"Invoice_Post",
+"Status": "Failed"
 }
 
 ####
-PUT http://localhost:4004/odata/v4/catalog/ErrorLogSet('064d2552-c7fd-40ef-9b50-561f4f526f76') HTTP/1.1
+PUT http://localhost:4004/odata/v4/catalog/ErrorLogSet('024c1f18-0022-48e0-b494-e9a97e82e39a') HTTP/1.1
 Content-Type: application/json
 
 {

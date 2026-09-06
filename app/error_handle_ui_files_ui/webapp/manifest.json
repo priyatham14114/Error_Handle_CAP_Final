@@ -154,6 +154,17 @@
                       "afterExecution": {
                         "enableAutoScroll": true
                       }
+                    },
+                    "id_MergeDownl_Button": {
+                      "press": "com.app.errorhandleuifilesui.ext.controller.mergeDownload.onMergeDownload",
+                      "visible": true,
+                      "enabled": true,
+                      "requiresSelection": true,
+                      "text": "Merge & Download",
+                      "position": {
+                        "placement": "After",
+                        "anchor": "DataFieldForAction::CatalogService.reTriggerFile"
+                      }
                     }
                   }
                 }

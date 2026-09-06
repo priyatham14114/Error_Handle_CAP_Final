@@ -12,6 +12,8 @@
     "@sap/cds": "^9",
     "@sap/html5-repo-mock": "^2.2.1",
     "@sap/xssec": "^4.12.1",
+    "csv-parse": "^7.0.2",
+    "csv-stringify": "^6.8.2",
     "express": "^4",
     "fast-xml-parser": "^5.2.5",
     "multer": "^2.0.2"
@@ -34,10 +36,14 @@
     "build": "rimraf resources mta_archives && mbt build --mtar archive",
     "deploy": "cf deploy mta_archives/archive.mtar --retries 1",
     "watch-error_handle_ui_fa": "cds watch --open com.app.errorhandleuifa/index.html?sap-ui-xx-viewCache=false --livereload false",
-    "watch-error_handle_ui_files_ui": "cds watch --open com.app.errorhandleuifilesui/index.html?sap-ui-xx-viewCache=false --livereload false"
+    "watch-error_handle_ui_files_ui": "cds watch --open com.app.errorhandleuifilesui/index.html?sap-ui-xx-viewCache=false --livereload false",
+    "watch-hypercaredash": "cds watch --open com.app.hypercaredash/index.html?sap-ui-xx-viewCache=false --livereload false"
   },
   "cds": {
     "requires": {
+      "queue": {
+        "maxAttempts": 3
+      },
       "[production]": {
         "auth": "xsuaa"
       },

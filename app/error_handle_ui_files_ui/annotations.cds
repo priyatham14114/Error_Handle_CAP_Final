@@ -158,6 +158,14 @@ annotate service.ErrorFilesSet with @(
             Criticality: #Positive,
         // Inline : true,
         }
+        // {
+        //     $Type       : 'UI.DataFieldForAction',
+        //     Action      : 'CatalogService.downloadMergedErrorDetails',
+        //     Label       : 'Merge & Download',
+        //     IsMassAction: true,
+        //     // InvocationGrouping : #ChangeSet,
+        //     Criticality : #Positive
+        // }
     ],
 );
 

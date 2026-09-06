@@ -1,0 +1,452 @@
+<mvc:View
+    controllerName="com.app.hypercaredash.controller.Home"
+    xmlns:mvc="sap.ui.core.mvc"
+    xmlns="sap.m"
+    xmlns:core="sap.ui.core"
+    xmlns:f="sap.f"
+    xmlns:tnt="sap.tnt"
+>
+    <tnt:ToolPage id="toolPage">
+        <tnt:header>
+            <tnt:ToolHeader id="_IDGenToolHeader1">
+                <Button
+                    visible="{= ${device>/system/phone}}"
+                    id="sideNavigationToggleButton"
+                    icon="sap-icon://menu2"
+                    type="Transparent"
+                    press=".onSideNavButtonPress"
+                >
+                    <layoutData>
+                        <OverflowToolbarLayoutData
+                            id="_IDGenOverflowToolbarLayoutData"
+                            priority="NeverOverflow"
+                        />
+                    </layoutData>
+                </Button>
+                <Image
+                    id="_IDGenImage"
+                    height="1.5rem"
+                    class="sapUiSmallMarginBegin"
+                    src="https://www.sap.com/dam/application/shared/logos/sap-logo-svg.svg"
+                />
+                <Title
+                    level="H1"
+                    text="Hypercare Dashboard"
+                    wrapping="false"
+                    id="productName"
+                >
+                    <layoutData>
+                        <OverflowToolbarLayoutData
+                            id="_IDGenOverflowToolbarLayoutData1"
+                            priority="Disappear"
+                        />
+                    </layoutData>
+                </Title>
+                <Text
+                    text="Mars"
+                    wrapping="false"
+                    id="secondTitle"
+                >
+                    <layoutData>
+                        <OverflowToolbarLayoutData
+                            id="_IDGenOverflowToolbarLayoutData2"
+                            priority="Disappear"
+                        />
+                    </layoutData>
+                </Text>
+
+                <ToolbarSpacer id="_IDGenToolbarSpacer" />
+                
+              
+                <DateRangeSelection
+                    id="DRS1"
+                    width="20rem"
+                    displayFormat="yyyy/MM/dd"
+                    change="onDateRangeChange"
+                />
+                  <Text
+                    id="_IDGenTextTimestamp"
+                    text=""
+                />
+                <MultiComboBox
+                    id="idMCBFlows"
+                    width="400px"
+                    visible="false"
+                    placeholder="Select Integration Flows Last in 24hrs"
+                    selectionFinish="onIFlowSelectionFinish"
+                    showClearIcon="true"
+                    showSelectAll="true"
+                    selectedKeys="{kpi>/aDefaultFlows}"
+                    items="{kpi>/iflows}"
+                >
+                    <core:Item id="_IDGenItem"
+                        key="{kpi>iFlow_name}"
+                        text="{kpi>iFlow_name}"
+                    />
+                </MultiComboBox>
+
+                <!-- <Text
+                    id="_IDGenTextTimestamp"
+                    text=""
+                /> -->
+
+                <!-- <SearchField
+                    width="25rem"
+                    id="searchField"
+                >
+                    <layoutData>
+                        <OverflowToolbarLayoutData
+                            id="_IDGenOverflowToolbarLayoutData3"
+                            priority="Low"
+                            group="1"
+                        />
+                    </layoutData>
+                </SearchField> -->
+                <!-- <Button
+                    visible="true"
+                    icon="sap-icon://search"
+                    type="Transparent"
+                    id="searchButton"
+                    tooltip="Search"
+                /> -->
+                <!-- <OverflowToolbarButton
+                    id="_IDGenOverflowToolbarButton"
+                    icon="sap-icon://source-code"
+                    type="Transparent"
+                    tooltip="Action 1"
+                    text="Action 1"
+                >
+                    <layoutData>
+                        <OverflowToolbarLayoutData
+                            id="_IDGenOverflowToolbarLayoutData4"
+                            group="2"
+                        />
+                    </layoutData>
+                </OverflowToolbarButton> -->
+                <!-- <OverflowToolbarButton
+                    id="_IDGenOverflowToolbarButton1"
+                    icon="sap-icon://card"
+                    type="Transparent"
+                    tooltip="Action 2"
+                    text="Action 2"
+                >
+                    <layoutData>
+                        <OverflowToolbarLayoutData
+                            id="_IDGenOverflowToolbarLayoutData5"
+                            group="2"
+                        />
+                    </layoutData>
+                </OverflowToolbarButton> -->
+                <ToolbarSeparator id="_IDGenToolbarSeparator">
+                    <layoutData>
+                        <OverflowToolbarLayoutData
+                            id="_IDGenOverflowToolbarLayoutData6"
+                            group="2"
+                        />
+                    </layoutData>
+                </ToolbarSeparator>
+                <!-- <OverflowToolbarButton
+                    id="_IDGenOverflowToolbarButton2"
+                    icon="sap-icon://action-settings"
+                    type="Transparent"
+                    text="Settings"
+                /> -->
+                <!-- <Button
+                    id="_IDGenButton"
+                    icon="sap-icon://bell"
+                    type="Transparent"
+                    tooltip="Notification"
+                >
+                    <layoutData>
+                        <OverflowToolbarLayoutData
+                            id="_IDGenOverflowToolbarLayoutData7"
+                            priority="NeverOverflow"
+                        />
+                    </layoutData>
+                </Button> -->
+                <tnt:ToolHeaderUtilitySeparator
+                    id="_IDGenToolHeaderUtilitySeparator"
+                />
+                <ToolbarSpacer
+                    id="_IDGenToolbarSpacer1"
+                    width="1.125rem"
+                />
+                <!-- <Avatar
+                    id="_IDGenAvatar"
+                    src="test-resources/sap/tnt/images/Woman_avatar_01.png"
+                    displaySize="XS"
+                    tooltip="Profile"
+                >
+                    <layoutData>
+                        <OverflowToolbarLayoutData
+                            id="_IDGenOverflowToolbarLayoutData8"
+                            priority="NeverOverflow"
+                        />
+                    </layoutData>
+                </Avatar> -->
+            </tnt:ToolHeader>
+        </tnt:header>
+        <tnt:subHeader>
+            <tnt:ToolHeader
+                id="_IDGenToolHeader2"
+                visible="{=! ${device>/system/phone}}"
+            >
+                <IconTabHeader
+                    id="_IDGenIconTabHeader"
+                    selectedKey="{/selectedKey}"
+                    items="{path: ''}"
+                    select=".onItemSelect"
+                    mode="Inline"
+                >
+                    <layoutData>
+                        <OverflowToolbarLayoutData
+                            id="_IDGenOverflowToolbarLayoutData9"
+                            priority="NeverOverflow"
+                            shrinkable="true"
+                        />
+                    </layoutData>
+                    <items>
+                        <IconTabFilter
+                            id="_IDGenIconTabFilter"
+                            items="{items}"
+                            icon="{icon}"
+                            text="{title}"
+                            key="{key}"
+                            interactionMode="SelectLeavesOnly"
+                        >
+                            <items>
+                                <IconTabFilter
+                                    id="_IDGenIconTabFilter1"
+                                    text="{title}"
+                                    key="{key}"
+                                    enabled="{enabled}"
+                                />
+                            </items>
+                        </IconTabFilter>
+                    </items>
+                </IconTabHeader>
+            </tnt:ToolHeader>
+        </tnt:subHeader>
+        <tnt:sideContent>
+            <tnt:SideNavigation
+                id="_IDGenSideNavigation"
+                visible="{= ${device>/system/phone}}"
+                expanded="true"
+                selectedKey="{/selectedKey}"
+                itemSelect=".onItemSelect"
+            >
+                <tnt:NavigationList
+                    id="_IDGenNavigationList"
+                    items="{path: ''}"
+                >
+                    <tnt:NavigationListItem
+                        id="_IDGenNavigationListItem"
+                        text="{title}"
+                        icon="{icon}"
+                        enabled="{enabled}"
+                        expanded="{expanded}"
+                        items="{items}"
+                        key="{key}"
+                    >
+                        <tnt:NavigationListItem
+                            id="_IDGenNavigationListItem1"
+                            text="{title}"
+                            key="{key}"
+                            enabled="{enabled}"
+                        />
+                    </tnt:NavigationListItem>
+                </tnt:NavigationList>
+            </tnt:SideNavigation>
+        </tnt:sideContent>
+        <tnt:mainContents>
+            <NavContainer
+                id="pageContainer"
+                initialPage="page1"
+            >
+                <pages>
+                    <ScrollContainer
+                        id="page1"
+                        horizontal="false"
+                        vertical="true"
+                        height="100%"
+                        class="sapUiContentPadding"
+                    >
+                        <f:GridContainer
+                            id="gridContainer"
+                            items="{kpi>/tiles}"
+                        >
+                            <f:layout>
+                                <f:GridContainerSettings
+                                    id="_IDGenGridContainerSettings"
+                                    rowSize="5rem"
+                                    columnSize="11rem"
+                                    gap="3.5rem"
+                                />
+                            </f:layout>
+
+                            <GenericTile
+                                id="_IDGenGenericTile1"
+                                class="sapUiTinyMargin"
+                                header="{kpi>DisplayName}"
+                                subheader="Technical Name: {kpi>iFlow_name}"
+                                press="onFlowTilePress"
+                                width="auto"
+                            >
+                                <TileContent
+                                    id="_IDGenTileContent"
+                                    footer="Success: {kpi>Successcount} | Failed: {kpi>Failed}"
+                                >
+                                    <NumericContent
+                                        id="_IDGenNumericContent"
+                                        value="{kpi>TotalRecords}"
+                                        valueColor="Good"
+                                    />
+                                </TileContent>
+                            </GenericTile>
+                        </f:GridContainer>
+                        <Table
+                            id="kpiTable"
+                            items="{kpi>/tiles}"
+                            class="sapUiResponsiveMargin"
+                        >
+                            <headerToolbar>
+                                <Toolbar id="_IDGenToolbar1">
+                                    <Title
+                                        id="_IDGenTitle"
+                                        text="Today's iFlow Statistics"
+                                    />
+                                </Toolbar>
+                            </headerToolbar>
+
+                            <columns>
+                                <Column id="_IDGenColumn">
+                                    <Text
+                                        id="_IDGenText"
+                                        text="iFlow Name"
+                                    />
+                                </Column>
+
+                                <Column
+                                    id="_IDGenColumn1"
+                                    hAlign="Center"
+                                >
+                                    <Text
+                                        id="_IDGenText1"
+                                        text="Total"
+                                    />
+                                </Column>
+
+                                <Column
+                                    id="_IDGenColumn2"
+                                    hAlign="Center"
+                                >
+                                    <Text
+                                        id="_IDGenText2"
+                                        text="Success"
+                                    />
+                                </Column>
+
+                                <Column
+                                    id="_IDGenColumn3"
+                                    hAlign="Center"
+                                >
+                                    <Text
+                                        id="_IDGenText3"
+                                        text="Failed"
+                                    />
+                                </Column>
+
+                                <Column
+                                    id="_IDGenColumn4"
+                                    hAlign="Center"
+                                >
+                                    <Text
+                                        id="_IDGenText4"
+                                        text="Variance"
+                                    />
+                                </Column>
+
+                                <Column
+                                    id="_IDGenColumn5"
+                                    hAlign="Center"
+                                >
+                                    <Text
+                                        id="_IDGenText5"
+                                        text="% Match"
+                                    />
+                                </Column>
+                            </columns>
+
+                            <items>
+                                <ColumnListItem id="_IDGenColumnListItem">
+                                    <cells>
+                                        <ObjectIdentifier
+                                            id="_IDGenObjectIdentifier"
+                                            title="{kpi>iFlow_name}"
+                                        />
+
+                                        <ObjectNumber
+                                            id="_IDGenObjectNumber"
+                                            number="{kpi>TotalRecords}"
+                                        />
+
+                                        <ObjectStatus
+                                            id="_IDGenObjectStatus"
+                                            text="{kpi>Successcount}"
+                                            state="Success"
+                                        />
+
+                                        <ObjectStatus
+                                            id="_IDGenObjectStatus1"
+                                            text="{kpi>Failed}"
+                                            state="Error"
+                                        />
+
+                                        <ObjectNumber
+                                            id="_IDGenObjectNumber1"
+                                            number="{kpi>Variance}"
+                                        />
+
+                                        <ObjectStatus
+                                            id="_IDGenObjectStatus2"
+                                            text="{= ${kpi>PercentMatch} + '%'}"
+                                            state="{=
+                        ${kpi>PercentMatch} >= 95 ? 'Success' :
+                        ${kpi>PercentMatch} >= 80 ? 'Warning' :
+                        'Error'
+                    }"
+                                        />
+                                    </cells>
+                                </ColumnListItem>
+                            </items>
+                        </Table>
+                    </ScrollContainer>
+                </pages>
+            </NavContainer>
+        </tnt:mainContents>
+    </tnt:ToolPage>
+    <!-- <HBox id="_IDGenHBox1" class="sapUiSmallMargin">
+
+        <SearchField id="_IDGenSearchField"
+            width="25%"
+            placeholder="Search iFlow..."
+            liveChange=".onSearch"
+            class="sapUiTinyMarginEnd"/>
+
+        <ComboBox id="_IDGenComboBox"
+            width="20%"
+            placeholder="Select iFlow"
+            selectionChange=".onIFlowSelection"
+            items="{
+                path: 'kpi>/iflows'
+            }">
+
+            <core:Item id="_IDGenItem"
+                key="{kpi>iFlow_name}"
+                text="{kpi>iFlow_name}"/>
+
+        </ComboBox>
+
+    </HBox>
+     -->
+</mvc:View>

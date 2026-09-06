@@ -40,8 +40,12 @@ sap.ui.define([
 
                                     var oContext = this.getBindingContext();
                                     const sPath = oContext.getPath();
+                                    console.log("sPath"+sPath)
                                     const sServiceUrl = this.getModel().sServiceUrl;
-                                    const sUploadUrl = `${sServiceUrl}${sPath}/ErrorPayloadFile/$value`;
+                                    console.log("sServiceUrl"+sServiceUrl)
+                                    const sUploadUrl =
+                                        `${sServiceUrl.replace(/\/$/, "")}/${sPath.replace(/^\//, "")}/ErrorPayloadFile/$value`;
+                                    // const sUploadUrl = `${sServiceUrl}${sPath}/ErrorPayloadFile/$value`;
 
                                     try {
                                         sap.ui.core.BusyIndicator.show(0);

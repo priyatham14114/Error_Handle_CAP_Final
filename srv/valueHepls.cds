@@ -6,7 +6,7 @@ annotate service.ErrorLogSet with {
 
     iFlow_name         @(Common.ValueList: {
         Label         : 'Integration Flow Name',
-        CollectionPath: 'ErrorLogSet',
+        CollectionPath: 'IFlowValueHelp',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'iFlow_name',
@@ -14,19 +14,19 @@ annotate service.ErrorLogSet with {
         }]
     });
 
-    createdAt          @(Common.ValueList: {
-        Label         : 'Created Time',
-        CollectionPath: 'ErrorLogSet',
-        Parameters    : [{
-            $Type            : 'Common.ValueListParameterInOut',
-            LocalDataProperty: 'createdAt',
-            ValueListProperty: 'createdAt'
-        }]
-    });
+    // createdAt          @(Common.ValueList: {
+    //     Label         : 'Created Time',
+    //     CollectionPath: 'DistinctErrorLogValues',
+    //     Parameters    : [{
+    //         $Type            : 'Common.ValueListParameterInOut',
+    //         LocalDataProperty: 'createdAt',
+    //         ValueListProperty: 'createdAt'
+    //     }]
+    // });
 
     createdBy                @(Common.ValueList: {
         Label         : 'Created By',
-        CollectionPath: 'ErrorLogSet',
+        CollectionPath: 'DistinctErrorLogValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'createdBy',
@@ -36,7 +36,7 @@ annotate service.ErrorLogSet with {
 
     Status             @(Common.ValueList: {
         Label         : 'Status',
-        CollectionPath: 'ErrorLogSet',
+        CollectionPath: 'StatusValueHelp',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'Status',
@@ -46,7 +46,7 @@ annotate service.ErrorLogSet with {
 
     Error_Code         @(Common.ValueList: {
         Label         : 'Status Code',
-        CollectionPath: 'ErrorLogSet',
+        CollectionPath: 'DistinctErrorLogValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'Error_Code',
@@ -56,7 +56,7 @@ annotate service.ErrorLogSet with {
 
     Error_Msg          @(Common.ValueList: {
         Label         : 'Error Message',
-        CollectionPath: 'ErrorLogSet',
+        CollectionPath: 'DistinctErrorLogValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'Error_Msg',
@@ -66,7 +66,7 @@ annotate service.ErrorLogSet with {
 
     Msg_ID             @(Common.ValueList: {
         Label         : 'Message ID',
-        CollectionPath: 'ErrorLogSet',
+        CollectionPath: 'DistinctErrorLogValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'Msg_ID',
@@ -76,7 +76,7 @@ annotate service.ErrorLogSet with {
 
     CorrelationID      @(Common.ValueList: {
         Label         : 'Correlation ID',
-        CollectionPath: 'ErrorLogSet',
+        CollectionPath: 'DistinctErrorLogValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'CorrelationID',
@@ -86,7 +86,7 @@ annotate service.ErrorLogSet with {
 
     NumberOfRetriggers @(Common.ValueList: {
         Label         : 'Retry Count',
-        CollectionPath: 'ErrorLogSet',
+        CollectionPath: 'DistinctErrorLogValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'NumberOfRetriggers',
@@ -96,7 +96,7 @@ annotate service.ErrorLogSet with {
 
     Receiver_System    @(Common.ValueList: {
         Label         : 'Receiver System',
-        CollectionPath: 'ErrorLogSet',
+        CollectionPath: 'DistinctErrorLogValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'Receiver_System',
@@ -106,7 +106,7 @@ annotate service.ErrorLogSet with {
 
     Department         @(Common.ValueList: {
         Label         : 'Department',
-        CollectionPath: 'ErrorLogSet',
+        CollectionPath: 'DistinctErrorLogValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'Department',
@@ -121,7 +121,7 @@ annotate service.ErrorFilesSet with {
 
     PayloadFileName          @(Common.ValueList: {
         Label         : 'Payload File Name',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'PayloadFileName',
@@ -131,7 +131,7 @@ annotate service.ErrorFilesSet with {
 
     MIMEType                 @(Common.ValueList: {
         Label         : 'Content Type',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'MIMEType',
@@ -141,7 +141,7 @@ annotate service.ErrorFilesSet with {
 
     ErrorDescription         @(Common.ValueList: {
         Label         : 'Error Description',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'ErrorDescription',
@@ -151,7 +151,7 @@ annotate service.ErrorFilesSet with {
 
     ShortErrorDescription    @(Common.ValueList: {
         Label         : 'Short Error Description',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'ShortErrorDescription',
@@ -161,7 +161,7 @@ annotate service.ErrorFilesSet with {
 
     ProcessDirectName        @(Common.ValueList: {
         Label         : 'Process Direct Name',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'ProcessDirectName',
@@ -171,7 +171,7 @@ annotate service.ErrorFilesSet with {
 
     Error_Code               @(Common.ValueList: {
         Label         : 'Status Code',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'Error_Code',
@@ -181,7 +181,7 @@ annotate service.ErrorFilesSet with {
 
     NumberOfRetriggersofFile @(Common.ValueList: {
         Label         : 'Retry Count',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'NumberOfRetriggersofFile',
@@ -191,7 +191,7 @@ annotate service.ErrorFilesSet with {
 
     Status                   @(Common.ValueList: {
         Label         : 'Status',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'Status',
@@ -201,7 +201,7 @@ annotate service.ErrorFilesSet with {
 
     CorrelationID            @(Common.ValueList: {
         Label         : 'Correlation Id',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'CorrelationID',
@@ -211,7 +211,7 @@ annotate service.ErrorFilesSet with {
 
     Receiver_System          @(Common.ValueList: {
         Label         : 'Receiver System',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'Receiver_System',
@@ -221,7 +221,7 @@ annotate service.ErrorFilesSet with {
 
     iFlow_name               @(Common.ValueList: {
         Label         : 'Integration Flow',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'iFlow_name',
@@ -231,7 +231,7 @@ annotate service.ErrorFilesSet with {
 
     Department               @(Common.ValueList: {
         Label         : 'Department',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'Department',
@@ -241,7 +241,7 @@ annotate service.ErrorFilesSet with {
 
     createdAt                @(Common.ValueList: {
         Label         : 'Created Time',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'createdAt',
@@ -251,7 +251,7 @@ annotate service.ErrorFilesSet with {
 
     createdBy                @(Common.ValueList: {
         Label         : 'Created By',
-        CollectionPath: 'ErrorFilesSet',
+        CollectionPath: 'DistinctErrorFilesValues',
         Parameters    : [{
             $Type            : 'Common.ValueListParameterInOut',
             LocalDataProperty: 'createdBy',
